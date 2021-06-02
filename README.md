@@ -4,7 +4,7 @@
 <h3>Team Members: Shaun Bharth and Siew Tuck Meng</h3>
 <h3>Supervisor: Ben Low</h3>
 
-![Tingkat Panda Logo](https://github.com/shaunpaulsingh/tingkatpanda/blob/master/htdocs/image/logo.png?raw=true)
+![Tingkat Panda Logo](https://github.com/shaunpaulsingh/tingkatpanda/raw/master/htdocs/images/logo.png)
 
 <h4>Project Synopsis</h4>
 <p>
