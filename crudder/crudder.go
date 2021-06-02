@@ -1,21 +1,20 @@
 package crudder
 
-func Crudder() *Crudder{
-	return this
+func Crudder() {
 }
 
-func Set(){
-
-}
-
-func Get(){
+func Set() {
 
 }
 
-func Modify(){
+func Get() {
 
 }
 
-func Delete{}{
+func Modify() {
+
+}
+
+func Delete() {
 
 }
