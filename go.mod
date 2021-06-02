@@ -4,6 +4,6 @@ go 1.16
 
 require (
 	github.com/garyburd/redigo v1.6.2
-	github.com/jfeliu007/goplantuml v1.5.2 // indirect
-	github.com/spf13/afero v1.6.0 // indirect
+	github.com/go-sql-driver/mysql v1.6.0
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 )

@@ -3,12 +3,9 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/crypto/bcrypt"
+	"tingkatpanda/myconnector"
 )
 
 /*
@@ -30,66 +27,8 @@ type User struct {
 	Password string
 }
 
-//
-func insertRecord(db *sql.DB, username, password string) int {
-	results, err := db.Exec("INSERT INTO GOLIVEDB.Users VALUES (?,?)", username, password)
-	if err != nil {
-		fmt.Println(err)
-		return 0
-	} else {
-		rows, _ := results.RowsAffected()
-		return int(rows)
-	}
-}
-
-// get the hashed password of the user in string type
-func getPasswordOfUser(db *sql.DB, username string) string {
-	results, err := db.Query("SELECT * FROM GOLIVEDB.Users where Username=?", username)
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	} else {
-		for results.Next() {
-			var person User
-			err = results.Scan(&person.UserName, &person.Password)
-			if err != nil {
-				fmt.Println(err)
-				return ""
-			} else {
-				return person.Password
-			}
-		}
-	}
-	return ""
-}
-
-// hash the given password using bcrypt()
-func hashPassword(password string) []byte {
-	if hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost); err != nil {
-		fmt.Println(err)
-		return nil
-	} else {
-		return hash
-	}
-}
-
-// saved in the db user supplied
-func verifyPassword(hashedPassword []byte, password string) bool {
-	err := bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
-	if err != nil {
-		return false
-	}
-	return true
-}
-
 func main() {
-	db, err := sql.Open("mysql", "user1:password@tcp(127.0.0.1:3306)/GOLIVEDB")
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("Database opened.")
-	}
-	defer db.Close()
+	db := myconnector.Connect()
 
 	for {
 		menu := []string{
@@ -145,7 +84,7 @@ func main() {
 			password := userPasswordNew
 
 			//insert the (trim) username and (hash) password into the DB
-			fmt.Println(insertRecord(db, name, string(hashPassword(password))))
+			fmt.Println(myconnector.InsertRecord(&db, name, string(myconnector.HashPassword(password))))
 
 		case 2:
 			//Ask the user to enter a username and password.
@@ -165,10 +104,10 @@ func main() {
 			password := userPassword
 
 			// retrieve the user's saved password (in string); hashed
-			userSavedPassword := getPasswordOfUser(db, name)
+			userSavedPassword := myconnector.GetPasswordOfUser(&db, name)
 
 			// the password saved in the db the user's supplied password
-			if verifyPassword([]byte(userSavedPassword), password) {
+			if myconnector.VerifyPassword([]byte(userSavedPassword), password) {
 				fmt.Println("User authenticated!")
 			} else {
 				fmt.Println("Invalid username and/or password")
