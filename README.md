@@ -17,7 +17,7 @@ This project will run through the following phases:
 
 <ul>
   <li>Ideation</li>
-  <l1>Wireframing</l1>
+  <li>Wireframing</l1>
   <li>Visual Design</li>
   <li>Requirements Gathering</li>
   <li>Information Architecture / Database Design</li>
