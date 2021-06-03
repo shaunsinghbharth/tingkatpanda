@@ -16,7 +16,7 @@ The rise of stay home working culture and the proliferation of delivery services
 This project will run through the following phases:
 
 <ul>
-  <li>Ideation>/li>
+  <li>Ideation</li>
   <l1>Wireframing</l1>
   <li>Visual Design</li>
   <li>Requirements Gathering</li>
