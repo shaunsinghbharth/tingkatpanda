@@ -5,10 +5,14 @@ import (
 	"os"
 )
 
-var rr Redrec
 var err error
+var rr RedConnection
 
-func chekErrorAndExit(err error) {
+func SetConnection(redConn *RedConnection){
+	rr = *redConn
+}
+
+func checkErrorAndExit(err error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		rr.CloseConn()
@@ -16,29 +20,29 @@ func chekErrorAndExit(err error) {
 	}
 }
 
-func rate(user string, item string, score float64) {
+func Rate(user string, item string, score float64) {
 	fmt.Printf("User %s ranked item %s with %.2f\n", user, item, score)
 	err := rr.Rate(item, user, score)
-	chekErrorAndExit(err)
+	checkErrorAndExit(err)
 }
 
-func getProbability(user string, item string) {
+func GetProbability(user string, item string) {
 	score, err := rr.CalcItemProbability(item, user)
-	chekErrorAndExit(err)
+	checkErrorAndExit(err)
 	fmt.Printf("%s %s %.2f\n", user, item, score)
 }
 
-func suggest(user string, max int) {
+func Suggest(user string, max int) {
 	fmt.Printf("Getting %d results for user %s\n", max, user)
 	rr.UpdateSuggestedItems(user, max)
 	s, err := rr.GetUserSuggestions(user, max)
-	chekErrorAndExit(err)
+	checkErrorAndExit(err)
 	fmt.Println("results:")
 	fmt.Println(s)
 }
 
-func update(max int) {
+func Update(max int) {
 	fmt.Printf("Updating DB\n")
 	err := rr.BatchUpdateSimilarUsers(max)
-	chekErrorAndExit(err)
+	checkErrorAndExit(err)
 }

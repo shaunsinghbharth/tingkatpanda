@@ -8,20 +8,28 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-// Redrec struct
-type Redrec struct {
+// RedConnection struct
+type RedConnection struct {
 	rconn redis.Conn
 }
 
-// New returns a new Redrec
-func New(url string) (*Redrec, error) {
+// New returns a new RedConnection
+func New(url string, password string) (*RedConnection, error) {
 	rconn, err := redis.DialURL(url)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
+	}else{
+		if _, err := rconn.Do("AUTH", password); err != nil {
+			fmt.Println(err.Error())
+			rconn.Close()
+			return nil, err
+		}
 	}
 
-	rr := &Redrec{
+	fmt.Println("Connect Success")
+
+	rr := &RedConnection{
 		rconn: rconn,
 	}
 
@@ -29,12 +37,12 @@ func New(url string) (*Redrec, error) {
 }
 
 // CloseConn closes the Redis connection
-func (rr *Redrec) CloseConn() {
+func (rr *RedConnection) CloseConn() {
 	rr.rconn.Close()
 }
 
 // Rate adds user->score to a given item
-func (rr *Redrec) Rate(item string, user string, score float64) error {
+func (rr *RedConnection) Rate(item string, user string, score float64) error {
 	_, err := rr.rconn.Do("ZADD", fmt.Sprintf("user:%s:items", user), score, item)
 	if err != nil {
 		return err
@@ -55,7 +63,7 @@ func (rr *Redrec) Rate(item string, user string, score float64) error {
 
 // GetUserSuggestions return the existing user
 //suggestions range for a given user as a []string
-func (rr *Redrec) GetUserSuggestions(user string, max int) ([]string, error) {
+func (rr *RedConnection) GetUserSuggestions(user string, max int) ([]string, error) {
 	items, err := redis.Strings(rr.rconn.Do("ZREVRANGE", fmt.Sprintf("user:%s:suggestions", user), 0, max, "WITHSCORES"))
 	if err != nil {
 		return nil, err
@@ -67,7 +75,7 @@ func (rr *Redrec) GetUserSuggestions(user string, max int) ([]string, error) {
 // BatchUpdateSimilarUsers runs on all the users,
 // getting the similarity candidates for each user and storing the similar
 // users and scores in a sorted set
-func (rr *Redrec) BatchUpdateSimilarUsers(max int) error {
+func (rr *RedConnection) BatchUpdateSimilarUsers(max int) error {
 	users, err := redis.Strings(rr.rconn.Do("SMEMBERS", "users"))
 	if err != nil {
 		return err
@@ -96,7 +104,7 @@ func (rr *Redrec) BatchUpdateSimilarUsers(max int) error {
 
 // UpdateSuggestedItems gets the candidate suggest items for a given user and stores
 // the calculated probability for each item in a sorted set
-func (rr *Redrec) UpdateSuggestedItems(user string, max int) error {
+func (rr *RedConnection) UpdateSuggestedItems(user string, max int) error {
 	items, err := rr.getSuggestCandidates(user, max)
 	if max > len(items) {
 		max = len(items)
@@ -121,7 +129,7 @@ func (rr *Redrec) UpdateSuggestedItems(user string, max int) error {
 
 // CalcItemProbability takes all the user`s similars that rated the input item
 // and calculates the average score.
-func (rr *Redrec) CalcItemProbability(user string, item string) (float64, error) {
+func (rr *RedConnection) CalcItemProbability(user string, item string) (float64, error) {
 	_, err := rr.rconn.Do("ZINTERSTORE",
 		"ztmp", 2, fmt.Sprintf("user:%s:similars", user), fmt.Sprintf("item:%s:scores", item), "WEIGHTS", 0, 1)
 	if err != nil {
@@ -148,7 +156,7 @@ func (rr *Redrec) CalcItemProbability(user string, item string) (float64, error)
 	return score, nil
 }
 
-func (rr *Redrec) getUserItems(user string, max int) ([]string, error) {
+func (rr *RedConnection) getUserItems(user string, max int) ([]string, error) {
 	items, err := redis.Strings(rr.rconn.Do("ZREVRANGE", fmt.Sprintf("user:%s:items", user), 0, max))
 	if err != nil {
 		return nil, err
@@ -157,7 +165,7 @@ func (rr *Redrec) getUserItems(user string, max int) ([]string, error) {
 	return items, nil
 }
 
-func (rr *Redrec) getItemScores(item string, max int) (map[string]string, error) {
+func (rr *RedConnection) getItemScores(item string, max int) (map[string]string, error) {
 	scores, err := redis.StringMap(rr.rconn.Do("ZREVRANGE", fmt.Sprintf("item:%s:scores", item), 0, max))
 	if err != nil {
 		return nil, err
@@ -166,7 +174,7 @@ func (rr *Redrec) getItemScores(item string, max int) (map[string]string, error)
 	return scores, nil
 }
 
-func (rr *Redrec) getSimilarityCandidates(user string, max int) ([]string, error) {
+func (rr *RedConnection) getSimilarityCandidates(user string, max int) ([]string, error) {
 	items, err := rr.getUserItems(user, max)
 	if max > len(items) {
 		max = len(items)
@@ -196,7 +204,7 @@ func (rr *Redrec) getSimilarityCandidates(user string, max int) ([]string, error
 	return users, nil
 }
 
-func (rr *Redrec) getSuggestCandidates(user string, max int) ([]string, error) {
+func (rr *RedConnection) getSuggestCandidates(user string, max int) ([]string, error) {
 	similarUsers, err := redis.Strings(rr.rconn.Do("ZRANGE", fmt.Sprintf("user:%s:similars", user), 0, max))
 	if err != nil {
 		return nil, err
@@ -232,7 +240,7 @@ func (rr *Redrec) getSuggestCandidates(user string, max int) ([]string, error) {
 	return candidates, nil
 }
 
-func (rr *Redrec) calcSimilarity(user string, simuser string) (float64, error) {
+func (rr *RedConnection) calcSimilarity(user string, simuser string) (float64, error) {
 	_, err := rr.rconn.Do("ZINTERSTORE",
 		"ztmp", 2, fmt.Sprintf("user:%s:items", user), fmt.Sprintf("user:%s:items", simuser), "WEIGHTS", 1, -1)
 	if err != nil {
