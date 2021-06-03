@@ -1,0 +1,175 @@
+@startuml
+namespace enginator {
+    class DistancePair << (S,Aquamarine) >> {
+        + Key <font color=blue>interface</font>{}
+        + Distance float64
+
+    }
+    class DistancePairList << (S,Aquamarine) >> {
+        + Swap(i int, j int) 
+        + Len() int
+        + Less(i int, j int) bool
+
+    }
+    class EnginatorItem << (S,Aquamarine) >> {
+        - key <font color=blue>interface</font>{}
+        - data <font color=blue>map</font>[<font color=blue>interface</font>{}]float64
+
+        + Key() <font color=blue>interface</font>{}
+        + Data() <font color=blue>map</font>[<font color=blue>interface</font>{}]float64
+
+    }
+    class EnginatorTable << (S,Aquamarine) >> {
+        - name string
+        - items <font color=blue>map</font>[<font color=blue>interface</font>{}]*EnginatorItem
+        - logger *log.Logger
+        - loadData <font color=blue>func</font>(<font color=blue>interface</font>{}) *EnginatorItem
+        - addedItem <font color=blue>func</font>(*EnginatorItem) 
+        - aboutToDeleteItem <font color=blue>func</font>(*EnginatorItem) 
+
+        - log(v ...<font color=blue>interface</font>{}) 
+
+        + Count() int
+        + SetDataLoader(f <font color=blue>func</font>(<font color=blue>interface</font>{}) *EnginatorItem) 
+        + SetAddedItemCallback(f <font color=blue>func</font>(*EnginatorItem) ) 
+        + SetAboutToDeleteItemCallback(f <font color=blue>func</font>(*EnginatorItem) ) 
+        + SetLogger(logger *log.Logger) 
+        + Add(key <font color=blue>interface</font>{}, data <font color=blue>map</font>[<font color=blue>interface</font>{}]float64) *EnginatorItem
+        + Delete(key <font color=blue>interface</font>{}) (*EnginatorItem, error)
+        + Exists(key <font color=blue>interface</font>{}) bool
+        + Value(key <font color=blue>interface</font>{}) (*EnginatorItem, error)
+        + Flush() 
+        + Recommend(key <font color=blue>interface</font>{}) (DistancePairList, error)
+        + Neighbors(key <font color=blue>interface</font>{}) (DistancePairList, error)
+
+    }
+    class enginator.DistancePairList << (T, #FF7700) >>  {
+    }
+}
+"sync.RWMutex" *-- "enginator.EnginatorItem"
+"sync.RWMutex" *-- "enginator.EnginatorTable"
+
+
+namespace engine {
+    class RedConnection << (S,Aquamarine) >> {
+        - rconn redis.Conn
+
+        - getUserItems(user string, max int) ([]string, error)
+        - getItemScores(item string, max int) (<font color=blue>map</font>[string]string, error)
+        - getSimilarityCandidates(user string, max int) ([]string, error)
+        - getSuggestCandidates(user string, max int) ([]string, error)
+        - calcSimilarity(user string, simuser string) (float64, error)
+
+        + CloseConn() 
+        + Rate(item string, user string, score float64) error
+        + GetUserSuggestions(user string, max int) ([]string, error)
+        + BatchUpdateSimilarUsers(max int) error
+        + UpdateSuggestedItems(user string, max int) error
+        + CalcItemProbability(user string, item string) (float64, error)
+
+    }
+}
+
+
+namespace main {
+    class User << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+
+    }
+}
+
+
+namespace myconnector {
+    class Shop << (S,Aquamarine) >> {
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopPeriod string
+
+    }
+    class User << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+
+    }
+}
+
+
+namespace scheduler {
+    class Job << (S,Aquamarine) >> {
+        - interval uint64
+        - jobFunc string
+        - unit timeUnit
+        - atTime time.Duration
+        - err error
+        - loc *time.Location
+        - lastRun time.Time
+        - nextRun time.Time
+        - startDay time.Weekday
+        - funcs <font color=blue>map</font>[string]<font color=blue>interface</font>{}
+        - fparams <font color=blue>map</font>[string][]<font color=blue>interface</font>{}
+        - lock bool
+        - tags []string
+
+        - shouldRun() bool
+        - run() ([]reflect.Value, error)
+        - periodDuration() (time.Duration, error)
+        - roundToMidnight(t time.Time) time.Time
+        - scheduleNextRun() error
+        - mustInterval(i uint64) error
+        - setUnit(unit timeUnit) *Job
+
+        + Err() error
+        + Do(jobFun <font color=blue>interface</font>{}, params ...<font color=blue>interface</font>{}) error
+        + At(t string) *Job
+        + GetAt() string
+        + Loc(loc *time.Location) *Job
+        + NextScheduledTime() time.Time
+        + From(t *time.Time) *Job
+        + Seconds() *Job
+        + Minutes() *Job
+        + Hours() *Job
+        + Second() *Job
+        + Minute() *Job
+        + Hour() *Job
+        + GetWeekday() time.Weekday
+        + Lock() *Job
+
+    }
+    interface Locker  {
+        + Lock(key string) (bool, error)
+        + Unlock(key string) error
+
+    }
+    class Scheduler << (S,Aquamarine) >> {
+        - jobs []*Job
+        - size int
+        - loc *time.Location
+
+        - getRunnableJobs() ([]*Job, int)
+
+        + Jobs() []*Job
+        + Len() int
+        + Swap(i int, j int) 
+        + Less(i int, j int) bool
+        + ChangeLoc(newLocation *time.Location) 
+        + NextRun() (*Job, time.Time)
+        + Every(interval uint64) *Job
+        + RunPending() 
+        + RunAll() 
+        + RunAllwithDelay(d int) 
+        + Scheduled(j <font color=blue>interface</font>{}) bool
+        + Clear() 
+        + Start() <font color=blue>chan</font> bool
+
+    }
+    class scheduler.timeUnit << (T, #FF7700) >>  {
+    }
+}
+
+
+"__builtin__.int" #.. "scheduler.timeUnit"
+"enginator.[]DistancePair" #.. "enginator.DistancePairList"
+@enduml
