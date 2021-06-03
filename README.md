@@ -15,14 +15,16 @@ The rise of stay home working culture and the proliferation of delivery services
 <p>
 This project will run through the following phases:
 
-Ideation
-Wireframing
-Visual Design
-Requirements Gathering
-Information Architecture / Database Design
-System Design
-Implementation
-Testing
-Integration
+<ul>
+  <li>Ideation>/li>
+  <l1>Wireframing</l1>
+  <li>Visual Design</li>
+  <li>Requirements Gathering</li>
+  <li>Information Architecture / Database Design</li>
+  <li>System Design</li>
+  <li>Implementation</li>
+  <li>Testing</li>
+  <li>Integration</li>
+</ul>
 
 Due to the short nature of this project and the fact that we only have 2 team members sans our advisor, we have decided to work based on an iterative model. We will go through iteration #1 where our chief aim is to complete our skeletal application and then iteration #2 where we will aim to complete a bare bones working prototype.</p>
