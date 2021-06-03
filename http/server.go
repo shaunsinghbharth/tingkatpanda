@@ -1,10 +1,10 @@
 package http
 
 import (
-	"assignment3/sessionManager"
 	"fmt"
 	"html/template"
 	"net/http"
+	"tingkatpanda/sessionManager"
 )
 
 type Page struct {

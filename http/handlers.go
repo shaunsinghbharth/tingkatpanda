@@ -1,7 +1,6 @@
 package http
 
 import (
-	"assignment3/bookings"
 	"fmt"
 	"io"
 	"net/http"
