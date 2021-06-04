@@ -167,6 +167,7 @@ type DistancePair struct {
 	Key interface{}
 	Distance float64
 }
+
 type DistancePairList []DistancePair
 
 func (p DistancePairList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
