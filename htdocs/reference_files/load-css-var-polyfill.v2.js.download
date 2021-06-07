@@ -1,0 +1,15 @@
+/* istanbul ignore file */
+
+var isCSSVarsSupported =
+    window.CSS && window.CSS.supports && window.CSS.supports('(--foo: red)');
+
+if (!isCSSVarsSupported) {
+    var script = document.createElement('script');
+    script.src = 'https://micro-assets.foodora.com/js/css-vars-ponyfill.js';
+    document.head.appendChild(script);
+    script.onload = function() {
+        window.cssVars({
+            silent: true
+        });
+    };
+}

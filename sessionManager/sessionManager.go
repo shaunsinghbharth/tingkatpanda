@@ -11,6 +11,9 @@ import (
 
 type SessionManager struct{
 	Users []Users `json: "Users"`
+
+	//This is the session name
+	SessionName string `json: SessionName`
 }
 
 type Users struct{
@@ -25,8 +28,9 @@ type Users struct{
 
 var ManagerSingletonInstance *SessionManager
 
-func (session *SessionManager)Init() *SessionManager{
+func (session *SessionManager)Init(sessionName string) *SessionManager{
 	session.Users = []Users{}
+	session.SessionName = sessionName
 
 	userFile, _ := os.Open("JSON/user.json")
 	bytes, err := ioutil.ReadAll(userFile)
@@ -67,7 +71,7 @@ func (session *SessionManager)GetPassword(index int) string{
 }
 
 func (session *SessionManager)RegisterUser(username string, password string, firstname string, lastname string) *http.Cookie{
-	tempSession, _ := NewV4()
+	tempSession := NewV4()
 	//if err != nil{
 		var tempUser = Users{UUID: tempSession.String(), Username: username, Password: password, Firstname: firstname, Lastname: lastname}
 		session.Users = append(session.Users, tempUser)
@@ -75,7 +79,7 @@ func (session *SessionManager)RegisterUser(username string, password string, fir
 
 
 	setcookie := &http.Cookie{
-		Name:       "BharthPHD",
+		Name:       session.SessionName,
 		Value:      session.Users[len(session.Users) - 1].UUID,
 		Path:       "/",
 	}
@@ -89,9 +93,9 @@ func (session *SessionManager)CreateSession(username string, password string) *h
 	for index := 0;index < len(session.Users); index = index + 1{
 		fmt.Println(session.Users[index].Username, username)
 		if session.Users[index].Username == username && session.Users[index].Password == password{
-			token, _ := NewV4()
+			token := NewV4()
 			setcookie := &http.Cookie{
-				Name:       "BharthPHD",
+				Name:       session.SessionName,
 				Value:      token.String(),
 				Path: "/",
 			}
@@ -105,7 +109,7 @@ func (session *SessionManager)CreateSession(username string, password string) *h
 }
 
 func (session *SessionManager)ValidSession(req *http.Request) bool{
-	cookie , err := req.Cookie("BharthPHD")
+	cookie , err := req.Cookie(session.SessionName)
 
 	if cookie != nil || err != nil{
 		return true
@@ -114,7 +118,7 @@ func (session *SessionManager)ValidSession(req *http.Request) bool{
 }
 
 func (session *SessionManager)GetCurrentUser(req *http.Request) string{
-	cookie , err := req.Cookie("BharthPHD")
+	cookie , err := req.Cookie(session.SessionName)
 
 	if err == nil{
 		for _,v := range session.Users{
@@ -127,7 +131,7 @@ func (session *SessionManager)GetCurrentUser(req *http.Request) string{
 }
 
 func (session *SessionManager)GetCurrentUserObject(req *http.Request) Users {
-	cookie , err := req.Cookie("BharthPHD")
+	cookie , err := req.Cookie(session.SessionName)
 
 	if err == nil{
 		for _,v := range session.Users{
@@ -155,7 +159,7 @@ func (session *SessionManager)Dump() error{
 
 func (session *SessionManager)DestroySession(req *http.Request) *http.Cookie{
 	setcookie := &http.Cookie{
-		Name:       "BharthPHD",
+		Name:       session.SessionName,
 		Value:      "-1",
 		Path: "/",
 		MaxAge: -1,

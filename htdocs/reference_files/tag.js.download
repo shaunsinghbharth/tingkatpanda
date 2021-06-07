@@ -1,0 +1,445 @@
+(function () {
+try {
+
+"object"!=typeof JSON&&(JSON={}),function(){"use strict";function f(t){return 10>t?"0"+t:t}function this_value(){return this.valueOf()}function quote(t){return rx_escapable.lastIndex=0,rx_escapable.test(t)?'"'+t.replace(rx_escapable,function(t){var e=meta[t];return"string"==typeof e?e:"\\u"+("0000"+t.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+t+'"'}function str(t,e){var r,n,o,u,f,a=gap,i=e[t];switch(i&&"object"==typeof i&&"function"==typeof i.toJSON&&(i=i.toJSON(t)),"function"==typeof rep&&(i=rep.call(e,t,i)),typeof i){case"string":return quote(i);case"number":return isFinite(i)?i+"":"null";case"boolean":case"null":return i+"";case"object":if(!i)return"null";if(gap+=indent,f=[],"[object Array]"===Object.prototype.toString.apply(i)){for(u=i.length,r=0;u>r;r+=1)f[r]=str(r,i)||"null";return o=0===f.length?"[]":gap?"[\n"+gap+f.join(",\n"+gap)+"\n"+a+"]":"["+f.join(",")+"]",gap=a,o}if(rep&&"object"==typeof rep)for(u=rep.length,r=0;u>r;r+=1)"string"==typeof rep[r]&&(n=rep[r],o=str(n,i),o&&f.push(quote(n)+(gap?": ":":")+o));else for(n in i)Object.prototype.hasOwnProperty.call(i,n)&&(o=str(n,i),o&&f.push(quote(n)+(gap?": ":":")+o));return o=0===f.length?"{}":gap?"{\n"+gap+f.join(",\n"+gap)+"\n"+a+"}":"{"+f.join(",")+"}",gap=a,o}}var rx_escapable=/[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;"function"!=typeof Date.prototype.toJSON&&(Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null},Boolean.prototype.toJSON=this_value,Number.prototype.toJSON=this_value,String.prototype.toJSON=this_value);var gap,indent,meta,rep;"function"!=typeof JSON.stringify&&(meta={"\b":"\\b","	":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},JSON.stringify=function(t,e,r){var n;if(gap="",indent="","number"==typeof r)for(n=0;r>n;n+=1)indent+=" ";else"string"==typeof r&&(indent=r);if(rep=e,e&&"function"!=typeof e&&("object"!=typeof e||"number"!=typeof e.length))throw Error("JSON.stringify");return str("",{"":t})})}();
+
+  var undefined;
+  var v = 1;
+  var W = window;
+  var D = W.document;
+  var C = W.console;
+  var navigator = W.navigator;
+  var protocol = 'https://';
+  var hostname = 'adventori.com';
+  var location;
+  var referrer;
+  var errors = {};
+  var tracker;
+  var debug;
+  var q;
+  var Wq;
+  var w;
+  var W0 = W;
+
+  try {
+    if (W._adv_inDapIF && W.parent.ADventori) {
+      W0 = W.parent;
+    }
+  } catch(e) {}
+
+  try {
+    try {
+      for (w = W; w != w.top; w = w.parent) {(w.parent.document.domain)}
+    } catch(e) {}
+    location = (w == w.top) ? w.location.href : ((w.parent == w.top) ? w.document.referrer : null);
+    referrer = (w == w.top) ? w.document.referrer : null;
+  } catch(e) {}
+
+  var log = function (l) {
+    try {
+      C && C[l] && C[l].apply(C, ['[ADventori]'].concat([].slice.call(arguments, 1)));
+    } catch(e) {}
+  };
+
+  var utils = {
+    _class2type: (function () {
+      var class2type = {};
+      var classes = ['Boolean', 'Number', 'String', 'Function', 'Array', 'Date', 'RegExp', 'Object', 'Error', 'Symbol'];
+      for (var i = 0; i < classes.length; i++) {
+        class2type['[object ' + classes[i] + ']'] = classes[i].toLowerCase();
+      }
+      return class2type;
+    })(),
+    type: function (o) {
+      if (o == null) {
+        return o + '';
+      }
+      return typeof o === 'object' || typeof o === 'function' ?
+          utils._class2type[Object.prototype.toString.call(o)] || 'object' :
+          typeof o;
+    },
+    isEmpty: function (o) {
+      var type = utils.type(o);
+      if (type == 'object') {
+        for (var key in o) {
+          return false;
+        }
+        return true;
+      }
+      return (
+        type == 'string' ? !o :
+        type == 'number' ? isNaN(o) :
+        type == 'array' ? !o.length :
+        (o == null)
+      );
+    },
+    extend: function (r) {
+      var o = arguments;
+      for (var i = 1; i < o.length; i++) {
+        for (var key in o[i]) {
+          if (o[i][key] !== undefined) {
+            r[key] = o[i][key];
+          }
+        }
+      }
+      return r;
+    },
+    rand: function () {
+      return Math.floor(2147483647 * Math.random());
+    },
+    trim: function (o) {
+      var type = utils.type(o);
+      return (
+        type == 'string' ? o.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '') :
+        type == 'boolean' ? (+o) :
+        o
+      );
+    },
+    param: function (o, json) {
+      var params = [];
+      var type;
+      for (var key in o) {
+        if (key != null && o[key] != null) {
+          type = utils.type(o[key]);
+          params.push(encodeURIComponent(key) + '=' + encodeURIComponent(json && (type == 'object' || type == 'array') ? JSON.stringify(o[key], function (k, v) {
+            return utils.trim(v);
+          }) : utils.trim(o[key])));
+        }
+      }
+      return params.join('&');
+    }
+  };
+
+  var dom = {
+    firePixel: function (url, data) {
+      url = data ? (url + '?' + data) : url;
+      var i = D.createElement('img');
+      i.width = 1;
+      i.height = 1;
+      i.src = url;
+      return true;
+    },
+    getScript: function (url, data) {
+      url = data ? (url + '?' + data) : url;
+      var s = D.createElement('script');
+      s.async = true;
+      s.src = url;
+      var sc = D.getElementsByTagName('script')[0];
+      sc.parentNode.insertBefore(s, sc);
+      return true;
+    },
+    sendBeacon: function (url, data) {
+      try {
+        if (navigator && navigator.sendBeacon) {
+          return navigator.sendBeacon(url, data);
+        }
+      } catch(e) {}
+      return false;
+    }
+  };
+
+  var track = {
+    transport: 'js',
+    consent: null,
+    collect: function (params, opts) {
+      opts = opts || {};
+      params.dl = params.dl || location;
+      params.dr = params.dr || referrer;
+      var url = protocol + hostname + '/s/collect';
+      var data = utils.param(params, true);
+      var consent = track.consent != null ? ('&tk_consent=' + track.consent) : '';
+      var cachebuster = '&z=' + utils.rand();
+      var extra = consent + cachebuster;
+      var transport = opts.transport || track.transport;
+      if (transport == 'js') {
+        dom.getScript(url, data + '&f=js' + extra);
+      } else if (transport == 'beacon') {
+        dom.sendBeacon(url, data + extra) || dom.firePixel(url, data + '&f=gif' + extra);
+      } else {
+        dom.firePixel(url, data + '&f=gif' + extra);
+      }
+      debug && log('info', '#send', params);
+      if (data.length > 2036) {
+        debug && log('warn', '[Too many data]', {len: data.length, max: 2036});
+      }
+    },
+    error: function (params, e, te) {
+      params = utils.extend({}, params);
+      params.te = te || 'AdDataErrorTag';
+      params.e = ((e && e.name ? (e.name + ': ' + e.message) : e) + '').slice(0, 1000);
+      params.dl = params.dl || location;
+      params.dr = params.dr || referrer;
+      var key = params.te + '~' + params.e;
+      if (!errors[key]) {
+        errors[key] = true;
+        dom.firePixel(protocol + hostname + '/s/error', utils.param(params) + '&z=' + utils.rand());
+      }
+      var type = utils.type(e);
+      log('error', te ? ('[' + te + ']') : '', type == 'error' ? '' : params.e, type == 'string' ? '' : e);
+    }
+  };
+
+  var doc = {
+    cookies: {
+      get: function(a){
+        if (track.consent == false) return;
+        try{var b=[],c=D.cookie.split(";");a=new RegExp("^\\s*"+a+"=\\s*(.*?)\\s*$");for(var d=0;d<c.length;d++){var e=c[d].match(a);e&&b.push(e[1])}return b[b.length-1]}catch(e){}
+      }
+    },
+    url: {
+      get: function(a,b){
+        a=new RegExp("[?&#]"+a+"=([^&#]*)").exec(b||location);return a&&a[1]
+      }
+    }
+  };
+
+  try {
+    var modules = {
+      require: {
+        scraper: function (tracker, opts) {
+          opts = opts || {};
+          dom.getScript(protocol + hostname + '/i/scraper/' + tracker.params.bid + '/' + opts.name + '/scraper' + (opts.preview ? '.preview' : '') + '.js');
+        }
+      }
+    };
+
+    var Tracker = function (bid, fields) {
+      this.params = {
+        v: v,
+        bid: bid,
+        uid: doc.cookies.get('adv_ui'),
+        ciid: doc.url.get('adv_iid'),
+        fiid: doc.cookies.get('adv_iid'),
+        cdt: null
+      };
+      this.defaults = {
+        location: location,
+        referrer: referrer
+      };
+      this.fields = {};
+      this.data = [];
+      this._set(fields);
+      debug = debug || doc.url.get('adv_debug');
+    };
+    Tracker.fields = {
+      params: {
+        conditional: 'cdt',
+        location: 'dl',
+        referrer: 'dr'
+      },
+      opts: {
+        transport: 1
+      }
+    };
+    Tracker.data = {
+      keys: {
+        item: {
+          t: 'type',
+          ca: 'catalog',
+          id: 'id',
+          re: 'related'
+        },
+        data: {
+          t: 'type'
+        },
+        geo: {
+          la: 'label',
+          lat: 'latitude',
+          lng: 'longitude',
+          rad: 'radius'
+        }
+      },
+      required: {
+        item: {
+          t: 1,
+          ca: 1,
+          id: 1,
+          re: 0
+        },
+        data: {
+          t: 1
+        }
+      }
+    };
+
+    Tracker.prototype._getWithDefault = function (fieldName, fieldValue) {
+      return ((fieldName in this.defaults) && (!fieldValue || fieldValue == 'auto')) ? this.defaults[fieldName] : fieldValue;
+    };
+    Tracker.prototype._set = function (fieldNameOrObject, fieldValue) {
+      if (!fieldNameOrObject) {
+        return;
+      }
+      if (utils.type(fieldNameOrObject) == 'object') {
+        for (var fieldName in fieldNameOrObject) {
+          this.fields[fieldName] = this._getWithDefault(fieldName, fieldNameOrObject[fieldName]);
+        }
+      } else {
+        this.fields[fieldNameOrObject] = this._getWithDefault(fieldNameOrObject, fieldValue);
+      }
+    };
+    Tracker.prototype._validate = function (d, data) {
+      var e = [];
+      var key;
+      if (!Tracker.data.required[d.dt]) {
+        e.push('dataType');
+      }
+      for (key in Tracker.data.required[d.dt]) {
+        if (Tracker.data.required[d.dt][key] && utils.isEmpty(d[key])) {
+          e.push(Tracker.data.keys[d.dt][key]);
+        }
+      }
+      if (e.length) {
+        this.error({name: 'Invalid fields', message: e.join(','), args: arguments}, 'AdDataErrorTagBadData');
+        return false;
+      }
+      for (key in data.required) {
+        if (data.required[key] && (!d.d || utils.isEmpty(d.d[key]))) {
+          e.push(key);
+        }
+      }
+      if (e.length) {
+        this.error({name: 'Required data', message: e.join(','), args: arguments}, 'AdDataErrorTagBadData');
+        return false;
+      }
+      return true;
+    };
+    Tracker.prototype.create = function (bid, fields) {
+      tracker = new Tracker(bid, fields);
+      debug && log('info', '#create', tracker.fields, tracker.params);
+    };
+    Tracker.prototype.get = function (fieldName) {
+      debug && log('info', '#get', this.fields);
+      return this.fields[fieldName];
+    };
+    Tracker.prototype.set = function (fieldNameOrObject, fieldValue) {
+      this._set(fieldNameOrObject, fieldValue);
+      debug && log('info', '#set', this.fields);
+    };
+    Tracker.prototype.add = function (dataType, data) {
+      var d = {};
+      var key;
+      d.dt = dataType;
+      for (key in Tracker.data.keys[d.dt]) {
+        d[key] = data[Tracker.data.keys[d.dt][key]];
+      }
+      if (data.data) {
+        d.d = utils.extend({}, data.data);
+      }
+      if (data.image) {
+        d.i = {};
+        for (key in data.image) {
+          if (data.image[key]) {
+            d.i[key] = 1;
+          }
+        }
+      }
+      if (data.geolocation) {
+        d.geo = {};
+        for (key in Tracker.data.keys.geo) {
+          d.geo[key] = data.geolocation[Tracker.data.keys.geo[key]];
+        }
+      }
+      if (this._validate(d, data)) {
+        this.data.push(d);
+        debug && log('info', '#add', d);
+      }
+    };
+    Tracker.prototype.send = function (hitType, fields) {
+      if (!hitType) {
+        this.error({name: 'Invalid hitType', message: hitType, args: arguments}, 'AdDataErrorTagAssert');
+        return;
+      }
+      var params = utils.extend({}, this.params);
+      var mergedFields = utils.extend({}, this.fields, fields);
+      var opts = {};
+      var key;
+      params.t = hitType;
+      if (this.data.length) {
+        params.d = this.data;
+      }
+      for (key in Tracker.fields.params) {
+        params[Tracker.fields.params[key]] = this._getWithDefault(key, mergedFields[key]);
+      }
+      for (key in Tracker.fields.opts) {
+        opts[key] = this._getWithDefault(key, mergedFields[key]);
+      }
+      track.collect(params, opts);
+      this.data = [];
+    };
+    Tracker.prototype.error = function (e, te) {
+      track.error(this.params, e, te);
+    };
+    Tracker.prototype.require = function (name, opts) {
+      modules.require[name](this, opts);
+      debug && log('info', '#require', name, opts);
+    };
+
+    q = function () {
+      q.poll.apply(q, [arguments]);
+    };
+    q.poll = function () {
+      try {
+        var args = [].slice.call(arguments);
+        var arg;
+        while (arg = args.shift()) {
+          debug && log('info', '#q', arg);
+          if (arg[0] != 'create' && !tracker) {
+            track.error({}, {name: 'Invalid command', message: 'No tracker created', args: arg}, 'AdDataErrorTagAssert');
+            continue;
+          }
+          if (utils.type(arg[0]) == 'function') {
+            arg[0](tracker);
+          } else {
+            Tracker.prototype[arg[0]].apply(tracker, [].slice.call(arg, 1));
+          }
+        }
+      } catch (e) {
+        track.error(tracker && tracker.params, e);
+      }
+    };
+
+    debug = debug || doc.url.get('adv_debug');
+    W0.ADventori = W0.ADventori || {};
+    Wq = W0.ADventori.q;
+    if (!Wq || !Wq.loaded) {
+      q.loaded = true;
+      W0.ADventori.q = q;
+      if (Wq) {
+        protocol = Wq.p || protocol;
+        hostname = Wq.h || hostname;
+        track.transport = Wq.t || track.transport;
+        track.consent = (Wq.cst != null ? Wq.cst : track.consent);
+        if (Wq.q) {
+          q.poll.apply(q, Wq.q);
+        }
+      }
+    }
+  } catch (e) {
+    track.error(tracker && tracker.params, e);
+  }
+
+} catch(_e) {
+  (function() {
+    var error = '';
+    var context = '';
+    var userAgent = '';
+    try {
+      error = (_e && _e.name ? (_e.name + ': ' + (_e.message || '')) : (_e || '')) + '';
+    } catch(__e) {}
+    try {
+      try {
+        context = window.top.location.href;
+      } catch(__e) {
+        context = window.document.referrer;
+      }
+    } catch(__e) {}
+    try {
+      userAgent = (window.navigator && window.navigator.userAgent);
+    } catch(__e) {}
+    document.createElement('img').src = ('https://adventori.com/tracker/trackPrint?tk_type=AdDataErrorTagInitJs' + '&tk_campaignId=0' + '&tk_cartoucheId=0' + '&tk_urlClick=' + encodeURIComponent(error) + '&tk_context=' + encodeURIComponent(context) + '&tk_retailer_4=' + encodeURIComponent(userAgent));
+    try {
+      window.console && window.console.error && window.console.error('[ADventori]', 'AdDataErrorTagInitJs', _e);
+    } catch(__e) {}
+  })();
+}
+})();

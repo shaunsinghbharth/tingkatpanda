@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 )
 
 func serveHTTP(res http.ResponseWriter, req *http.Request){
 	fmt.Println("Main Handler")
-	fmt.Println(req.Cookie("BharthPHD"))
+	fmt.Println(req.Cookie("tingkatpanda"))
 
 	title := req.URL.Path[len("/"):]
 	//fmt.Println(title)
@@ -53,8 +52,6 @@ func loginHandler(res http.ResponseWriter, req *http.Request){
 		username := req.FormValue("username")
 		password := req.FormValue("password")
 
-
-
 		token := manager.CreateSession(username,password)
 
 		fmt.Println(token)
@@ -74,18 +71,11 @@ func loginHandler(res http.ResponseWriter, req *http.Request){
 		return
 
 	default:
-		p, err := loadPage("login.gohtml")
-		if err != nil{
-			return
-		}
-		p.Body.Execute(res,empty{})
 	}
 }
 
 func signupHandler(res http.ResponseWriter, req *http.Request){
 	fmt.Println("Signup Handler")
-
-
 
 	var p *Page
 
@@ -93,7 +83,6 @@ func signupHandler(res http.ResponseWriter, req *http.Request){
 		Title: "",
 		Body:  nil,
 	}
-
 	p = p
 
 	// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
@@ -109,18 +98,10 @@ func signupHandler(res http.ResponseWriter, req *http.Request){
 		firstname := req.FormValue("firstname")
 		lastname := req.FormValue("lastname")
 
-		p, err := loadPage("signup.gohtml")
-		if err != nil{
-			return
-		}
-
 		token := manager.RegisterUser(username,password,firstname,lastname)
 
 		fmt.Println(token)
 		http.SetCookie(res, token)
-
-
-		p.Body.Execute(res,empty{})
 
 		if token == nil{
 			fmt.Fprintf(res, "Login Credentials are incorrect. Did not log in.")
@@ -129,13 +110,7 @@ func signupHandler(res http.ResponseWriter, req *http.Request){
 			fmt.Fprintf(res, "Address = %s\n", password)
 			fmt.Fprintf(res, "Token = %s\n", token)
 		}
-
 	default:
-		p, err := loadPage("signup.gohtml")
-		if err != nil{
-			return
-		}
-		p.Body.Execute(res,empty{})
 	}
 }
 
@@ -146,80 +121,6 @@ func adminHandler(res http.ResponseWriter, req *http.Request){
 	title := req.URL.Path[len("/"):]
 	p, _ := loadPage(title)
 	p.Body.Execute(res, empty{})
-}
-
-func viewHandler(res http.ResponseWriter, req *http.Request){
-	fmt.Println("View Handler")
-	switch req.Method {
-	case "GET":
-		id := req.FormValue("id")
-		if id == "" {
-			break
-		}
-		p, err := loadPage("edit.gohtml")
-		if err != nil {
-			return
-		}
-
-		slot, err := strconv.Atoi(id)
-		data := bookings.GenerateCurrentBooking(slot, manager.GetCurrentUser(req))
-
-		p.Body.Execute(res, data)
-		return
-	case "POST":
-		time := req.FormValue("time")
-		doctor, _ := strconv.Atoi(req.FormValue("doctor"))
-		slot, _ := strconv.Atoi(req.FormValue("slot"))
-
-		bookings.EditBooking(slot,time,doctor)
-	}
-
-	p, _ := loadPage("view.gohtml")
-	if bookings.ReturnCurrentUserBookings(manager.GetCurrentUser(req)) == nil{
-		p.Body.Execute(res, empty{})
-
-	}else{
-		p.Body.Execute(res, bookings.ReturnCurrentUserBookings(manager.GetCurrentUser(req)))
-	}
-}
-
-func serviceHandler(res http.ResponseWriter, req *http.Request){
-	fmt.Println("Service Handler")
-
-	switch req.Method{
-	case "GET":
-		id := req.FormValue("id")
-		if id == ""{
-			break
-		}
-		p, err := loadPage("book.gohtml")
-		if err != nil{
-			return
-		}
-
-		slot, err := strconv.Atoi(id)
-		data := bookings.GenerateCurrentBooking(slot,manager.GetCurrentUser(req))
-
-		p.Body.Execute(res,data)
-		return
-	default:
-		p, err := loadPage("available.gohtml")
-		if err != nil{
-			return
-		}
-		p.Body.Execute(res,empty{})
-		return
-	}
-
-
-	//title := req.URL.Path[len("/service/"):]
-	p, _ := loadPage("available.gohtml")
-	fmt.Println(bookings.BookingsData)
-	err := p.Body.Execute(res, bookings.BookingsData)
-	if err != nil{
-		p.Body.Execute(res, empty{})
-	}
-
 }
 
 func profileEditor(res http.ResponseWriter, req *http.Request){
@@ -247,13 +148,6 @@ func profileEditor(res http.ResponseWriter, req *http.Request){
 func Destroy(res http.ResponseWriter, req *http.Request){
 	token := manager.DestroySession(req)
 	http.SetCookie(res, token)
-
-	p, _ := loadPage("index.gohtml")
-	fmt.Println(bookings.BookingsData)
-	err := p.Body.Execute(res, bookings.BookingsData)
-	if err != nil{
-		p.Body.Execute(res, empty{})
-	}
 }
 
 func DELETEALLSESSIONS(res http.ResponseWriter, req *http.Request) {
@@ -272,7 +166,6 @@ func DELETEALLUSERS(res http.ResponseWriter, req *http.Request) {
 
 	for _,v := range manager.Users{
 		manager.DeleteUser(v.Username)
-		bookings.DeleteBookingByUser(v.Username)
 	}
 	http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
 }

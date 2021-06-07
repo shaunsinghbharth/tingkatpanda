@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// Accessing a new regommend table for the first time will create it.
 	western := enginator.Table("western")
 
 	FoodChrisAte := make(map[interface{}]float64)

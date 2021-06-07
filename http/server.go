@@ -26,7 +26,7 @@ func Start(){
 
 	fmt.Println("Initialising Session Manager")
 	manager = &sessionManager.SessionManager{}
-	manager.Init()
+	manager.Init("tingkatpanda")
 
 	fs := http.FileServer(http.Dir("templates/css/"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
@@ -36,9 +36,6 @@ func Start(){
 	http.HandleFunc("/", serveHTTP)
 	http.HandleFunc("/login/", loginHandler)
 	http.HandleFunc("/signup/", signupHandler)
-	http.HandleFunc("/service/", serviceHandler)
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", viewHandler)
 	http.HandleFunc("/profile/", profileEditor)
 	http.HandleFunc("/admin/", adminHandler)
 	http.HandleFunc("/destroy/", Destroy)
@@ -46,11 +43,6 @@ func Start(){
 	//ADMIN ONLY
 	http.HandleFunc("/deletesessions/", DELETEALLSESSIONS)
 	http.HandleFunc("/deleteusers/", DELETEALLUSERS)
-
-
-	//http.HandleFunc("/css/", CSSHandler)
-
-	//http.Handle("/css/", http.StripPrefix("/css/", fileServer))
 
 	err := srv.ListenAndServe()
 	if err != nil{
