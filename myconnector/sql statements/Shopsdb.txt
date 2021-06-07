@@ -1,0 +1,28 @@
+CREATE TABLE `Shops` (
+  `ShopID` int NOT NULL AUTO_INCREMENT,
+  `ShopName` varchar(256) DEFAULT NULL,
+  `ShopAddress` varchar(256) DEFAULT NULL,
+  `ShopRating` varchar(45) DEFAULT NULL,
+  `ShopPeriod` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ShopID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+============================
+
+
+func EditRecord(db *sql.DB, ID int, SN string, SA string, SR string, SP string) {
+	results, err := db.Exec("UPDATE Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopPeriod=? WHERE ShopId=?", SN, SA, SR, SP, ID)
+	fmt.Print(results)
+
+	if err != nil {
+		panic(err)
+	} else {
+		rows, _ := results.RowsAffected()
+		fmt.Println(rows)
+	}
+}
+
+
+==================================

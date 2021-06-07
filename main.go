@@ -35,17 +35,8 @@ type Shop struct { // map this type to the record in the Shops table
 	ShopPeriod  string
 }
 
-type Item struct { // map this type to the record in the Shops table
-	ItemId    int
-	ItemName  string
-	ItemPrice float64
-	ItemDesc  string
-	ItemImg   string
-	ShopId    int
-}
-
 func main() {
-	db := myconnector.Connect()
+	db := myconnector.ConnectShops()
 
 	for {
 		menu := []string{
@@ -88,13 +79,6 @@ func main() {
 		var descitem string
 		var imgitem string
 		var idshop int
-
-		defer func() {
-			if err := recover(); err != nil {
-				fmt.Printf("You have entered an invalid choice. Value should be between %d and %d", 1, len(menu))
-			}
-
-		}()
 
 		fmt.Println("User Login Menu: ")
 		fmt.Println("================ ")
@@ -159,25 +143,22 @@ func main() {
 			//View All Shops
 			fmt.Println("1.Get All Shops Info")
 
-			myconnector.GetRecords(db)
+			myconnector.GetRecords(&db)
 
 		case 4:
 			//Get Specific Shop Info
 			fmt.Println("2.Get Specific Shop Info")
 
-			fmt.Println("What is the specific Shop you want to view?")
+			fmt.Println("What is the specific Shop ID you want to view?")
 			fmt.Scanln(&idnew)
 
-			myconnector.GetSpecificRecord(db, idnew)
+			myconnector.GetSpecificRecord(&db, idnew)
 
 		case 5:
 			//Add New Shop
 			fmt.Println("2.Add New Shop")
 
-			fmt.Println("Shop ID is auto generated?")
-			fmt.Scanln(&idnew)
-
-			fmt.Println("What is the new Shop Address?")
+			fmt.Println("What is the new Shop Name?")
 			fmt.Scanln(&namenew)
 
 			fmt.Println("What is the new Shop Address?")
@@ -189,15 +170,15 @@ func main() {
 			fmt.Println("What is the shop availability period of the new shop?")
 			fmt.Scanln(&periodnew)
 
-			myconnector.InsertRecord(db, idnew, namenew, addressnew, ratingnew, periodnew)
+			myconnector.InsertRecordS(&db, namenew, addressnew, ratingnew, periodnew)
 
-			fmt.Println(idnew, namenew, addressnew, ratingnew, periodnew, "is added.")
+			fmt.Println(namenew, addressnew, ratingnew, periodnew, "are added.")
 
 		case 6:
 			//Update Shop
 			fmt.Println("4. Update Shop Details")
 
-			fmt.Println("What is the Shop To Be Updated?")
+			fmt.Println("What is the Shop ID To Be Updated?")
 			fmt.Scanln(&idnew)
 
 			fmt.Println("What is the Shop Name To Be Updated?")
@@ -212,7 +193,7 @@ func main() {
 			fmt.Println("What is the Shop Availability Period To Be Updated?")
 			fmt.Scanln(&periodnew)
 
-			myconnector.EditRecord(db, idnew, namenew, addressnew, ratingnew, periodnew)
+			myconnector.EditRecord(&db, idnew, namenew, addressnew, ratingnew, periodnew)
 
 			fmt.Println(idnew, namenew, addressnew, ratingnew, periodnew, "are updated.")
 
@@ -220,10 +201,10 @@ func main() {
 			//Delete A Shop
 			fmt.Println("5. Delete A Shop")
 
-			fmt.Println("What is the Shop to be deleted?")
+			fmt.Println("What is the Shop ID to be deleted?")
 			fmt.Scanln(&idnew)
 
-			myconnector.DeleteRecord(db, idnew)
+			myconnector.DeleteRecord(&db, idnew)
 
 			fmt.Println(idnew, "is deleted.")
 
@@ -231,23 +212,20 @@ func main() {
 			//View All Items
 			fmt.Println("1.Get All Items Info")
 
-			myconnector.GetRecordsI(db)
+			myconnector.GetItemRecords(&db)
 
 		case 9:
 			//Get Specific Item Info
 			fmt.Println("2.Get Specific Item Info")
 
-			fmt.Println("What is the specific Item you want to view?")
+			fmt.Println("What is the specific Item ID you want to view?")
 			fmt.Scanln(&iditem)
 
-			myconnector.GetSpecificRecordI(db, iditem)
+			myconnector.GetSpecificItemRecord(&db, iditem)
 
 		case 10:
 			//Add New Item
 			fmt.Println("2.Add New Item")
-
-			fmt.Println("Item ID is auto generated?")
-			fmt.Scanln(&iditem)
 
 			fmt.Println("What is the new Item Name?")
 			fmt.Scanln(&nameitem)
@@ -261,12 +239,12 @@ func main() {
 			fmt.Println("What is the new Item Image?")
 			fmt.Scanln(&imgitem)
 
-			fmt.Println("What is the new Shop ID To Be Updated?")
+			fmt.Println("What is the new Shop ID?")
 			fmt.Scanln(&idshop)
 
-			myconnector.InsertRecordI(db, iditem, nameitem, priceitem, descitem, imgitem, idshop)
+			myconnector.InsertItemRecord(&db, nameitem, priceitem, descitem, imgitem, idshop)
 
-			fmt.Println(idnew, namenew, addressnew, ratingnew, periodnew, "is added.")
+			fmt.Println(nameitem, priceitem, descitem, imgitem, idshop, "are added.")
 
 		case 11:
 			//Update Item
@@ -290,7 +268,7 @@ func main() {
 			fmt.Println("What is the Shop ID To Be Updated?")
 			fmt.Scanln(&idshop)
 
-			myconnector.EditRecordI(db, iditem, nameitem, priceitem, descitem, imgitem, idshop)
+			myconnector.EditItemRecord(&db, iditem, nameitem, priceitem, descitem, imgitem, idshop)
 
 			fmt.Println(iditem, nameitem, priceitem, descitem, imgitem, idshop, "are updated.")
 
@@ -301,7 +279,7 @@ func main() {
 			fmt.Println("What is the Item ID to be deleted?")
 			fmt.Scanln(&iditem)
 
-			myconnector.DeleteRecordI(db, iditem)
+			myconnector.DeleteItemRecord(&db, iditem)
 
 			fmt.Println(iditem, "is deleted.")
 

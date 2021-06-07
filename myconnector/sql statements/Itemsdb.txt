@@ -1,0 +1,70 @@
+CREATE TABLE `Items` (
+  `ItemId` int NOT NULL AUTO_INCREMENT,
+  `ItemName` varchar(256) DEFAULT NULL,
+  `ItemPrice` float DEFAULT NULL,
+  `ItemDesc` varchar(256) DEFAULT NULL,
+  `ItemImg` varchar(256) DEFAULT NULL,
+  `ShopID` int DEFAULT NULL,
+  PRIMARY KEY (`ItemId`),
+  KEY `ShopID_idx` (`ShopID`),
+  CONSTRAINT `ShopID` FOREIGN KEY (`ShopID`)
+  REFERENCES `Shops` (`ShopID`)
+  ON DELETE SET NULL 
+  ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+=======================================
+
+ALTER TABLE `Items`   
+DROP CONSTRAINT `ShopID` FOREIGN KEY (`ShopID`);   
+
+-----------------------------------------
+
+SELECT Items.ItemId, Items.ItemName , Items.ItemPrice, Items.ItemDesc, Items.ItemImg, Items.ShopID
+FROM Items
+INNER JOIN Shops ON Items.ShopID=Shops.ShopID;
+
+--------------------------------------
+func GetItemRecords(db *sql.DB)
+
+results, err := db.Query("Select * FROM GOLIVEDB.Items INNER JOIN Shops ON Items.ShopID=Shops.ShopID")
+
+
+==========================================
+
+//Items Table
+		var iditem int
+		var nameitem string
+		var priceitem float64
+		var descitem string
+		var imgitem string
+		var idshop int
+
+==================================
+
+//Set Shop ID to Cascade
+func EditItemRecord(db *sql.DB, ID int, IN string, IP float64, DE string, IG string, SI int) {
+	results, err := db.Exec("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", IN, IP, DE, IG, SI, ID)
+	//results, err := db.Exec("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=? INNER JOIN Shops ON Items.ShopID=Shops.ShopID", IN, IP, DE, IG, SI, ID)
+	if err != nil {
+		panic(err)
+	} else {
+		rows, _ := results.RowsAffected()
+		fmt.Println(rows)
+	}
+}
+
+
+----------------------------------
+
+go run .
+
+
+
+------------------------------------
+
+
+https://www.w3schools.com/mysql/mysql_join.asp
+
+
+=========================
