@@ -25,9 +25,10 @@ To create the MySQL DB.
 type User struct {
 	UserName string
 	Password string
+	ApiKey   string
 }
 
-//
+//insert the user name and password in the Users table
 func InsertRecord(db *sql.DB, username, password string) int {
 	results, err := db.Exec("INSERT INTO GOLIVEDB.Users VALUES (?,?)", username, password)
 	if err != nil {
@@ -73,6 +74,59 @@ func HashPassword(password string) []byte {
 // saved in the db user supplied
 func VerifyPassword(hashedPassword []byte, password string) bool {
 	err := bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+//
+//insert the user name and api in the Users table
+func InsertApiKeyRecord(db *sql.DB, username, apikey string) int {
+	results, err := db.Exec("INSERT INTO GOLIVEDB.ApiUsers VALUES (?,?)", username, apikey)
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	} else {
+		rows, _ := results.RowsAffected()
+		return int(rows)
+	}
+}
+
+// get the hashed password of the user in string type
+func GetApiKeyOfUser(db *sql.DB, username string) string {
+	results, err := db.Query("SELECT * FROM GOLIVEDB.ApiUsers where Username=?", username)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	} else {
+		for results.Next() {
+			var person User
+			err = results.Scan(&person.UserName, &person.ApiKey)
+			if err != nil {
+				fmt.Println(err)
+				return ""
+			} else {
+				return person.ApiKey
+			}
+		}
+	}
+	return ""
+}
+
+// hash the given apikey using bcrypt()
+func HashApiKeyPassword(apikey string) []byte {
+	if hash, err := bcrypt.GenerateFromPassword([]byte(apikey), bcrypt.MinCost); err != nil {
+		fmt.Println(err)
+		return nil
+	} else {
+		return hash
+	}
+}
+
+// saved in the db user supplied
+func VerifyUserApiKey(hashedApiKey []byte, apikey string) bool {
+	err := bcrypt.CompareHashAndPassword(hashedApiKey, []byte(apikey))
 	if err != nil {
 		return false
 	}
