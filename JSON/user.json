@@ -1,0 +1,26 @@
+[
+    {
+        "UUID": "d9c68405-7530-45b7-90d2-161053c33b4d",
+        "Type": "admin",
+        "Username": "test@test.com",
+        "Password": "test",
+        "Firstname": "Test",
+        "Lastname": "User"
+    },
+    {
+        "UUID": "",
+        "Type": "user",
+        "Username": "joshua@test.com",
+        "Password": "password",
+        "Firstname": "Joshua",
+        "Lastname": "Kong"
+    },
+    {
+        "UUID": "c8cb1f0a-ec81-43a9-a75f-c7c961f4de78",
+        "Type": "user",
+        "Username": "shaun@interface.com.sg",
+        "Password": "password",
+        "Firstname": "Shaun",
+        "Lastname": "Singh"
+    }
+]
