@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"tingkatpanda/enginator"
+	"tingkatpanda/myconnector"
 )
 
 func ServeHTTP(res http.ResponseWriter, req *http.Request){
@@ -19,15 +21,57 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 
 	if err != nil{
 		//res.Header().Set("Content-Type", "text/html")
-		p, _ = loadPage("index.gohtml")
+		p, _ = loadPage("index.html")
 	}
 	p.Body.Execute(res, empty{})
 
+	/*
 	if manager.IsAdmin(req){
 		fmt.Fprint(res, "<a href='/deletesessions/'>Delete All Sessions</a><br>")
 		fmt.Fprint(res, "<a href='/deleteusers/'>Delete All Users</a><br>")
 
 	}
+	*/
+
+}
+
+func ShowForm(res http.ResponseWriter, req *http.Request){
+
+}
+
+func ShowRecommendation(res http.ResponseWriter, req *http.Request){
+	db := myconnector.ConnectShops()
+	western := enginator.Table("western")
+
+	FoodChrisAte := make(map[interface{}]float64)
+	FoodChrisAte[1] = 5.0
+	FoodChrisAte[2] = 4.0
+	FoodChrisAte[3] = 3.0
+	western.Add("Chris", FoodChrisAte)
+
+	FoodJayAte := make(map[interface{}]float64)
+	FoodJayAte[1] = 3.0
+	FoodJayAte[3] = 2.0
+	FoodJayAte[5] = 1.5
+	western.Add("Jay", FoodJayAte)
+
+	var output []myconnector.Item
+	recs, _ := western.Recommend("Chris")
+	for _, rec := range recs {
+		//fmt.Println("Recommending", myconnector.GetSpecificItemRecord(&db, rec.Key.(int)), "with score:", rec.Distance)
+		output = append(output, myconnector.GetSpecificItemRecord(&db, rec.Key.(int)))
+	}
+
+	fmt.Println("Recommendation Handler")
+	var p *Page
+
+	p = &Page{
+		Title: "",
+		Body:  nil,
+	}
+
+	p, _ = loadPage("results.gohtml")
+	p.Body.Execute(res, &output)
 }
 
 func loginHandler(res http.ResponseWriter, req *http.Request){
