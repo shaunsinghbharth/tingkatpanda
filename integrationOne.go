@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"tingkatpanda/enginator"
 	"tingkatpanda/myconnector"
 )
 
 func main() {
 	db := myconnector.ConnectShops()
+	//httpd.Start()
+	//http.HandleFunc("/", httpd.ServeHTTP)
 
 	western := enginator.Table("western")
 
@@ -26,8 +27,7 @@ func main() {
 
 	nbs, _ := western.Neighbors("Chris")
 	for _, nb := range nbs {
-		value, _ := strconv.Atoi(nb.Key.(string))
-		fmt.Println("Recommending", myconnector.GetSpecificItemRecord(&db, value), "with score:", nb.Distance)
+		fmt.Println("Recommending", nb.Key, "with score:", nb.Distance)
 	}
 
 	recs, _ := western.Recommend("Chris")

@@ -1,4 +1,4 @@
-package http
+package httpd
 
 import (
 	"fmt"
@@ -33,7 +33,7 @@ func Start(){
 	is := http.FileServer(http.Dir("templates/images/"))
 	http.Handle("/images/", http.StripPrefix("/images/", is))
 
-	http.HandleFunc("/", serveHTTP)
+	http.HandleFunc("/", ServeHTTP)
 	http.HandleFunc("/login/", loginHandler)
 	http.HandleFunc("/signup/", signupHandler)
 	http.HandleFunc("/profile/", profileEditor)

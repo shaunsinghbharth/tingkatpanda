@@ -1,4 +1,4 @@
-package http
+package httpd
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-func serveHTTP(res http.ResponseWriter, req *http.Request){
+func ServeHTTP(res http.ResponseWriter, req *http.Request){
 	fmt.Println("Main Handler")
 	fmt.Println(req.Cookie("tingkatpanda"))
 
-	title := req.URL.Path[len("/"):]
+	title := req.URL.Path[len("/htdocs/"):]
 	//fmt.Println(title)
 	var p *Page
 
