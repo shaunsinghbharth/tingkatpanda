@@ -38,7 +38,7 @@ type Item struct { // map this type to the record in the Shops table
 	ShopId    int //Foreign Key
 }
 
-func GetItemRecords(db *sql.DB) {
+func GetItemRecords(db *sql.DB){
 
 	results, err := db.Query("Select * FROM GOLIVEDB.Items")
 
@@ -96,16 +96,16 @@ func DeleteItemRecord(db *sql.DB, ID int) {
 	}
 }
 
-func GetSpecificItemRecord(db *sql.DB, ID int) {
+func GetSpecificItemRecord(db *sql.DB, ID int) Item{
 
 	results, err := db.Query("Select * FROM GOLIVEDB.Items WHERE ItemId=?", ID)
 	if err != nil {
 		panic(err.Error())
 	}
 
+	var item Item
 	for results.Next() {
 		// map this type to the record in the table
-		var item Item
 		err = results.Scan(&item.ItemId, &item.ItemName, &item.ItemPrice, &item.ItemDesc, &item.ItemImg, &item.ShopId)
 		if err != nil {
 			panic(err.Error())
@@ -113,6 +113,8 @@ func GetSpecificItemRecord(db *sql.DB, ID int) {
 
 		fmt.Println("|ItemId:", item.ItemId, "|ItemName:", item.ItemName, "|ItemPrice:", item.ItemPrice, "|ItemDesc:", item.ItemDesc, "|ItemImg:", item.ItemImg, "|ShopId:", item.ShopId, "|")
 	}
+
+	return item
 }
 
 /*
