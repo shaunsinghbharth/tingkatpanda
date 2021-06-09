@@ -31,7 +31,7 @@ type Api struct { // map this type to the record in the Shops table
 
 func GetApiRecords(db *sql.DB) {
 
-	results, err := db.Query("Select * FROM GOLIVEDB.ApiUsers")
+	results, err := db.Query("Select * FROM GOLIVEDB.Users")
 
 	if err != nil {
 		panic(err.Error())
@@ -54,7 +54,7 @@ func GetApiRecords(db *sql.DB) {
 //Edit Api Key
 func EditApiRecord(db *sql.DB, AN string, AK string) {
 
-	results, err := db.Exec("UPDATE ApiUsers SET ApiKey=? WHERE UserName=?", AK, AN)
+	results, err := db.Exec("UPDATE Users SET Password=? WHERE UserName=?", AK, AN)
 	if err != nil {
 		panic(err)
 	} else {
@@ -66,7 +66,7 @@ func EditApiRecord(db *sql.DB, AN string, AK string) {
 //Delete Api Key
 func DeleteApiRecord(db *sql.DB, AN string) {
 
-	results, err := db.Exec("DELETE FROM ApiUsers WHERE UserName=?", AN)
+	results, err := db.Exec("DELETE FROM Users WHERE UserName=?", AN)
 	if err != nil {
 		panic(err)
 	} else {
@@ -77,7 +77,7 @@ func DeleteApiRecord(db *sql.DB, AN string) {
 
 func GetSpecificApiRecord(db *sql.DB, AN string) {
 
-	results, err := db.Query("Select * FROM GOLIVEDB.ApiUsers WHERE UserName=?", AN)
+	results, err := db.Query("Select * FROM GOLIVEDB.Users WHERE UserName=?", AN)
 	if err != nil {
 		panic(err.Error())
 	}
