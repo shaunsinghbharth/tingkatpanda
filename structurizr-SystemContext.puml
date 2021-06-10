@@ -1,0 +1,31 @@
+@startuml
+title Tingkat Panda - System Context
+
+skinparam {
+  shadowing false
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  PackageBorderColor<<group>> #cccccc
+  PackageFontColor<<group>> #cccccc
+}
+hide stereotype
+top to bottom direction
+
+skinparam rectangle<<2>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+}
+skinparam person<<1>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+}
+
+person "==User\n<size:10>[Person]</size>\n\nA user of my Tingkat Panda." <<1>> as 1
+rectangle "==Tingkat Panda\n<size:10>[Software System]</size>\n\nThe Tingkat Panda System." <<2>> as 2
+
+1 .[#707070,thickness=2].> 2 : "<color:#707070>Uses"
+@enduml

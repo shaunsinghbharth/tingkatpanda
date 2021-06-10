@@ -28,10 +28,10 @@ func Start(){
 	manager = &sessionManager.SessionManager{}
 	manager.Init("tingkatpanda")
 
-	fs := http.FileServer(http.Dir("templates/css/"))
-	http.Handle("/css/", http.StripPrefix("/htdocs/css/", fs))
-	is := http.FileServer(http.Dir("templates/images/"))
-	http.Handle("/images/", http.StripPrefix("/htdocs/images/", is))
+	fs := http.FileServer(http.Dir("htdocs/css/"))
+	http.Handle("/css/", http.StripPrefix("/css/", fs))
+	is := http.FileServer(http.Dir("htdocs/images/"))
+	http.Handle("/images/", http.StripPrefix("/images/", is))
 
 	http.HandleFunc("/", ServeHTTP)
 	http.HandleFunc("/login/", loginHandler)

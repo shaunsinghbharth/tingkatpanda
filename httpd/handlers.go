@@ -12,8 +12,8 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 	fmt.Println("Main Handler")
 	fmt.Println(req.Cookie("tingkatpanda"))
 
-	title := req.URL.Path[len("/htdocs/"):]
-	//fmt.Println(title)
+	title := req.URL.Path[len("/"):]
+	fmt.Println(title)
 	var p *Page
 
 	//res.Header().Set("Content-Type", "text/css")
