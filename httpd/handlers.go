@@ -1,11 +1,16 @@
 package httpd
 
 import (
+	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
+	"io/ioutil"
+	"math"
 	"net/http"
+	"strconv"
 	"tingkatpanda/enginator"
-	"tingkatpanda/myconnector"
+	"tingkatpanda/models"
 )
 
 func ServeHTTP(res http.ResponseWriter, req *http.Request){
@@ -35,32 +40,152 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 
 }
 
-func ShowForm(res http.ResponseWriter, req *http.Request){
+func ShowSelect(res http.ResponseWriter, req *http.Request){
+	var p *Page
 
+	p = &Page{
+		Title: "",
+		Body:  nil,
+	}
+
+	p, _ = loadPage("select.html")
+
+	p.Body.Execute(res, nil)
+}
+
+func Populate(key string) *enginator.EnginatorTable{
+	table := enginator.Table("recommendations")
+
+	users := enginator.GetUsers(key)
+
+	for _,v := range users{
+		temp := make(map[interface{}]float64)
+		items := enginator.GetUserItems(key,v.UserName)
+
+		for _,val := range items{
+			fmt.Println(v.UserName)
+			rating := float64(val.Rating)
+			temp[val.ItemID] = rating
+		}
+		table.Add(v.UserName, temp)
+	}
+
+	return table
+}
+
+func GetCoordinates(postcode string) (float64, float64)  {
+	///commonapi/search?searchVal={SearchText}&returnGeom={Y/N}&getAddrDetails={Y/N}&pageNum={PageNumber}
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", "https://developers.onemap.sg/commonapi/search", nil)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+
+	q := req.URL.Query()
+	q.Add("searchVal", postcode)
+	q.Add("returnGeom", "Y")
+	q.Add("getAddrDetails", "Y")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	fmt.Println(string(bodyBytes))
+
+	var data map[string]interface{}
+	//err = json.NewDecoder(resp.Body).Decode(&data)
+	json.Unmarshal(bodyBytes, &data)
+
+	if err != nil {
+		//Error
+	}
+
+	var results []interface{}
+	var singleResult map[string]interface{}
+	for k,v := range data{
+		fmt.Println("COORDSMAP", k,v)
+		if k == "results"{
+			results = v.([]interface{})
+			singleResult = results[0].(map[string]interface{})
+		}
+	}
+
+	fmt.Println("RESULT" , singleResult)
+	//return 0.0, 0.0
+	LAT, _ := strconv.ParseFloat(singleResult["LATITUDE"].(string), 64)
+	LONG, _ := strconv.ParseFloat(singleResult["LONGITUDE"].(string), 64)
+	return LAT, LONG
+}
+
+func distance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, unit ...string) float64 {
+	const PI float64 = 3.141592653589793
+
+	radlat1 := float64(PI * lat1 / 180)
+	radlat2 := float64(PI * lat2 / 180)
+
+	theta := float64(lng1 - lng2)
+	radtheta := float64(PI * theta / 180)
+
+	dist := math.Sin(radlat1) * math.Sin(radlat2) + math.Cos(radlat1) * math.Cos(radlat2) * math.Cos(radtheta)
+
+	if dist > 1 {
+		dist = 1
+	}
+
+	dist = math.Acos(dist)
+	dist = dist * 180 / PI
+	dist = dist * 60 * 1.1515
+
+	if len(unit) > 0 {
+		if unit[0] == "K" {
+			dist = dist * 1.609344
+		} else if unit[0] == "N" {
+			dist = dist * 0.8684
+		}
+	}
+
+	return dist
 }
 
 func ShowRecommendation(res http.ResponseWriter, req *http.Request){
-	db := myconnector.ConnectShops()
-	western := enginator.Table("western")
+	user := req.URL.Query().Get("user")
+	postcode := req.URL.Query().Get("postcode")
+	price, _ := strconv.ParseFloat(req.URL.Query().Get("price"), 64)
+	category := req.URL.Query().Get("category")
+	lat, long := GetCoordinates(postcode)
 
-	FoodChrisAte := make(map[interface{}]float64)
-	FoodChrisAte[1] = 5.0
-	FoodChrisAte[2] = 4.0
-	FoodChrisAte[3] = 3.0
-	western.Add("Chris", FoodChrisAte)
+	table := Populate("KEYVALUE")
+	recs, _ := table.Recommend(user)
 
-	FoodJayAte := make(map[interface{}]float64)
-	FoodJayAte[1] = 3.0
-	FoodJayAte[3] = 2.0
-	FoodJayAte[5] = 1.5
-	western.Add("Jay", FoodJayAte)
+	var output []models.CombinedItem
+		for i, rec := range recs {
+			fmt.Println("Recommending", rec.Key, "with score:", rec.Distance, "at index:", i)
 
-	var output []myconnector.Item
-	recs, _ := western.Recommend("Chris")
-	for _, rec := range recs {
-		//fmt.Println("Recommending", myconnector.GetSpecificItemRecord(&db, rec.Key.(int)), "with score:", rec.Distance)
-		output = append(output, myconnector.GetSpecificItemRecord(&db, rec.Key.(int)))
-	}
+				var tempItem []models.CombinedItem
+				//cacheOutput, found := c.Get(strconv.Itoa(rec.Key.(int)))
+				//if found {
+					//temp = cacheOutput.([]models.CombinedItem)
+				//} else {
+					tempItem = enginator.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
+					//c.Set(strconv.Itoa(rec.Key.(int)), output, cache.DefaultExpiration)
+				//}
+				shoplat, shoplong := GetCoordinates(tempItem[0].ShopPostCode)
+				itemPrice := tempItem[0].ItemPrice
+				itemCategory := tempItem[0].ItemCategory
+				dist := distance(lat,long,shoplat,shoplong, "K")
+				if dist < 5 && price == itemPrice && category == itemCategory{
+					output = append(output, tempItem[0])
+				}
+
+		}
+
 
 	fmt.Println("Recommendation Handler")
 	var p *Page
@@ -71,6 +196,9 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 	}
 
 	p, _ = loadPage("results.gohtml")
+
+	fmt.Println("OUTPUT ", output)
+	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
 	p.Body.Execute(res, &output)
 }
 

@@ -206,6 +206,19 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("DELETED")
 }
 
+func GetUserItems(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("user")
+
+	var item []map[string]interface{}
+	item = GetUserItemsRecords(&db, userID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(item)
+
+	fmt.Println("SUCCESS")
+}
+
 // Middleware function, which will be called for each request
 func Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

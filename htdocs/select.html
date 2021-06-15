@@ -66,13 +66,33 @@
 
             
             <link rel="stylesheet" href="https://assets.foodora.com/15f52b8/css/dist/sg-default.css?15f52b8" />
-            <link rel="stylesheet" href="css/vendor.css" />
+            <link rel="stylesheet" href="/css/vendor.css" />
                     
                 <script src="https://assets.foodora.com/15f52b8/js/lib/load-fid-polyfill.js?15f52b8"></script>
 
                 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
+
+        <script
+                src="https://code.jquery.com/jquery-3.6.0.min.js"
+                integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+                crossorigin="anonymous"></script>
+
+        <script type="application/javascript">
+            $( document ).ready(function() {
+                console.log( "ready!" );
+                let searchParams = new URLSearchParams(window.location.search)
+                let param = searchParams.get('postcode')
+                $("#postcode").val(param)
+
+
+                $("#selector li").click(function(){
+                    alert("CLICK")
+                    $("#cuisine-type").val($(this).attr("value"));
+                });
+            });
+        </script>
             </head>
     <body class="country-sg home">
                             
@@ -158,26 +178,10 @@ View
     
     <div class="logo-wrapper">
         <div class="logo logo-foodpanda">
-            <img src="images/logo.png" style="width: 300px;">
+            <a href="/"> <img src="/images/logo.png" style="width: 300px;"> </a>
         </div>
     </div>
 
-    <div class="language-wrapper">
-        <div class="language-switch">
-                                                                                <a class="active"
-            href="/"
-
-            data-locale="en">
-                en
-            </a>
-                                                                                        <a class=""
-            href="/zh/"
-
-            data-locale="zh">
-                中文
-            </a>
-            </div>
-    </div>
 
     <div class="user-wrapper">
         <div class="account header__account" data-testid="header-account">
@@ -688,12 +692,12 @@ View
                                                             </button>
                                                         </div>
                                                         <div class="lane-wrapper">
-                                                            <ul data-testid="filter-lane" class="filter-lane">
-                                                                <li>
+                                                            <ul data-testid="filter-lane" class="filter-lane" id="selector">
+                                                                <li value="seafood">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-46"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-46-img" class="filter-tile__img"><img
-                                                                                alt="Seafood" src="./reference_files/46.png"></div>
+                                                                                alt="Seafood" src="/reference_files/46.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-46-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Seafood">
@@ -701,11 +705,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="korean">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-60"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-60-img" class="filter-tile__img"><img
-                                                                                alt="Korean" src="./reference_files/60.png"></div>
+                                                                                alt="Korean" src="/reference_files/60.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-60-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Korean">
@@ -713,11 +717,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="chinese">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-38"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-38-img" class="filter-tile__img"><img
-                                                                                alt="Chinese" src="./reference_files/38.png"></div>
+                                                                                alt="Chinese" src="/reference_files/38.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-38-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Chinese">
@@ -725,11 +729,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="chicken">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-64"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-64-img" class="filter-tile__img"><img
-                                                                                alt="Chicken" src="./reference_files/64.png"></div>
+                                                                                alt="Chicken" src="/reference_files/64.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-64-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Chicken">
@@ -737,11 +741,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="singaporean">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-100"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-100-img" class="filter-tile__img"><img
-                                                                                alt="Singaporean" src="./reference_files/100.png"></div>
+                                                                                alt="Singaporean" src="/reference_files/100.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-100-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular"
@@ -749,11 +753,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="japanese">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-36"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-36-img" class="filter-tile__img"><img
-                                                                                alt="Japanese" src="./reference_files/36.png"></div>
+                                                                                alt="Japanese" src="/reference_files/36.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-36-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular"
@@ -761,11 +765,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="alcohol">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-57"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-57-img" class="filter-tile__img"><img
-                                                                                alt="Alcohol" src="./reference_files/57.png"></div>
+                                                                                alt="Alcohol" src="/reference_files/57.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-57-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Alcohol">
@@ -773,11 +777,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="american">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-51"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-51-img" class="filter-tile__img"><img
-                                                                                alt="American" src="./reference_files/51.png"></div>
+                                                                                alt="American" src="/reference_files/51.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-51-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular"
@@ -785,11 +789,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="asian">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-39"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-39-img" class="filter-tile__img"><img
-                                                                                alt="Asian" src="./reference_files/39.png"></div>
+                                                                                alt="Asian" src="/reference_files/39.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-39-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Asian"><p
@@ -797,11 +801,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="beverages">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-53"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-53-img" class="filter-tile__img"><img
-                                                                                alt="Beverages" src="./reference_files/53.png"></div>
+                                                                                alt="Beverages" src="/reference_files/53.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-53-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular"
@@ -809,11 +813,11 @@ View
                                                                         </div>
                                                                     </div>
                                                                 </li>
-                                                                <li>
+                                                                <li value="burgers">
                                                                     <div class="box-flex filter-tile br-xs bs-1" data-testid="filter-tile-49"
                                                                          style="cursor: pointer;">
                                                                         <div data-testid="filter-tile-49-img" class="filter-tile__img"><img
-                                                                                alt="Burgers" src="./reference_files/49.png"></div>
+                                                                                alt="Burgers" src="/reference_files/49.png"></div>
                                                                         <div class="box-flex filter-tile__title pl-xs pr-xs"
                                                                              data-testid="filter-tile-49-title">
                                                                             <div class="sm:f-12 f-14 sm:fw-bold fw-bold lh-regular" title="Burgers">
@@ -827,24 +831,37 @@ View
                                                     </div>
                                                 </section>
 
-    <section class="vendor-lane-section">
-        <h3 class="title-flat">Select your meal timings</h3>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px;">Mornings</button>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px;">Afternoons</button>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px;">Nighttime</button>
+    <form action="/recommend/" method="GET">
+        <input type="hidden" id="cuisine-type" name="category" value="">
+        <input type="hidden" id="postcode" name="postcode" value="">
+        <input type="hidden" id="user" name="user" value="shaunpaulsingh">
+
+        <section class="vendor-lane-section">
+        <h3 class="title-flat">Whats your budget</h3>
+            <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="radio" id="priceone" name="price" value="1">
+            <label for="priceone">$</label>
+            <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="radio" id="pricetwo" name="price" value="2">
+            <label for="pricetwo">$$</label>
+            <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="radio" id="pricethree" name="price" value="3">
+            <label for="pricethree">$$$</label>
+
     </section>
 
     <div style="clear: both;"></div>
 
     <section class="vendor-lane-section">
-        <h3 class="title-flat">Select a budget</h3>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px; min-width: 50px;">$</button>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px; min-width: 50px;">$$</button>
-        <button style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px; float: left; margin-right: 50px; min-width: 50px;">$$$</button>
+        <h3 class="title-flat">Which meals would you like to have?</h3>
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="morning" name="timing" value="1">
+        <label for="morning">Mornings</label>
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="afternoon" name="timing" value="2">
+        <label for="afternoon">Afternoons</label>
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="night" name="timing" value="3">
+        <label for="night">Nights</label>
 
         <div style="clear: both;"></div>
 
         <button style="background: #DF0F64; color: #fff; border: 0px; padding: 15px; float: left; margin: 50px; min-width: 50px; margin-left: 0px;">CURATE</button>
+    </form>
     </section>
 
             </main>

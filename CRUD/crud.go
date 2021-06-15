@@ -7,30 +7,28 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"sync"
 )
-
-type Users struct { // map this type to the record in the Users table
-	UserName string `json:"username"`
-	Password string `json:"password"`
-}
 
 var db sql.DB
 
-func init() {
+func Initialise(wg sync.WaitGroup) {
 	db = Connect()
-}
 
-func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	initaliseHandlers(router)
 	log.Fatal(http.ListenAndServe(":5555", router))
+
+	wg.Done()
 }
 
 func initaliseHandlers(router *mux.Router) {
 	router.Use(Authenticator)
 
 	router.HandleFunc("/getfullitem", GetFullItem).Methods("GET")
+
+	router.HandleFunc("/getuseritems", GetUserItems).Methods("GET")
 
 	router.HandleFunc("/getusers", GetAllUser).Methods("GET")
 	router.HandleFunc("/getspecificusers", GetUserByUserName).Methods("GET")
@@ -46,7 +44,6 @@ func initaliseHandlers(router *mux.Router) {
 	router.HandleFunc("/getspecificitems", GetItemByItemID).Methods("GET")
 	router.HandleFunc("/edititems", EditItem).Methods("GET")
 	router.HandleFunc("/deleteitems", DeleteItem).Methods("GET")
-
 }
 
 func Connect() sql.DB {

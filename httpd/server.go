@@ -2,8 +2,11 @@ package httpd
 
 import (
 	"fmt"
+	"github.com/patrickmn/go-cache"
 	"html/template"
 	"net/http"
+	"sync"
+	"time"
 	"tingkatpanda/sessionManager"
 )
 
@@ -12,15 +15,18 @@ type Page struct {
 	Body  *template.Template
 }
 
-
 type empty struct{
 
 }
 
 var manager *sessionManager.SessionManager
 var srv *http.Server
+var c *cache.Cache
 
-func Start(){
+func Start(wg sync.WaitGroup){
+	fmt.Println("Generating cache")
+	c = cache.New(5*time.Minute, 10*time.Minute)
+
 	fmt.Println("Starting HTTP Server")
 	srv = &http.Server{Addr: ":5221"}
 
@@ -32,15 +38,12 @@ func Start(){
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
 	is := http.FileServer(http.Dir("htdocs/images/"))
 	http.Handle("/images/", http.StripPrefix("/images/", is))
+	rs := http.FileServer(http.Dir("htdocs/reference_files/"))
+	http.Handle("/reference_files/", http.StripPrefix("/reference_files/", rs))
 
 	http.HandleFunc("/", ServeHTTP)
-	http.HandleFunc("/login/", loginHandler)
-	http.HandleFunc("/signup/", signupHandler)
-	http.HandleFunc("/profile/", profileEditor)
-	http.HandleFunc("/admin/", adminHandler)
-	http.HandleFunc("/destroy/", Destroy)
-	http.HandleFunc("/form/", ShowForm)
 	http.HandleFunc("/recommend/", ShowRecommendation)
+	http.HandleFunc("/select/", ShowSelect)
 
 	//ADMIN ONLY
 	http.HandleFunc("/deletesessions/", DELETEALLSESSIONS)
@@ -52,6 +55,7 @@ func Start(){
 		Stop()
 	}
 	defer srv.Shutdown(nil)
+	wg.Done()
 }
 
 func Stop(){

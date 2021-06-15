@@ -7,11 +7,12 @@ import (
 
 func SQLtoMap(results *sql.Rows) []map[string]interface{} {
 	columns, _ := results.Columns()
-	resultMap := make(map[string]interface{})
+	var resultMap map[string]interface{}
 
 	var resultArray = make([]map[string]interface{}, 0)
 
 	for results.Next() {
+		resultMap = make(map[string]interface{})
 		values := make([]interface{}, len(columns))
 		pointers := make([]interface{}, len(columns))
 		for i,_ := range values {
@@ -29,10 +30,13 @@ func SQLtoMap(results *sql.Rows) []map[string]interface{} {
 				resultMap[columns[i]] = value
 			case []uint8:
 				resultMap[columns[i]] = string(value)
+			case float64, float32:
+				resultMap[columns[i]] = value
 			}
 		}
 		resultArray = append(resultArray, resultMap)
 	}
 
+	fmt.Println("SQLtoMAP ", resultArray)
 	return resultArray
 }

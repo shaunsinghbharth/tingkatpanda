@@ -158,26 +158,10 @@ View
     
     <div class="logo-wrapper">
         <div class="logo logo-foodpanda">
-            <img src="/images/logo.png" style="width: 300px;">
+            <a href="/"> <img src="/images/logo.png" style="width: 300px;"> </a>
         </div>
     </div>
 
-    <div class="language-wrapper">
-        <div class="language-switch">
-                                                                                <a class="active"
-            href="/"
-
-            data-locale="en">
-                en
-            </a>
-                                                                                        <a class=""
-            href="/zh/"
-
-            data-locale="zh">
-                中文
-            </a>
-            </div>
-    </div>
 
     <div class="user-wrapper">
         <div class="account header__account" data-testid="header-account">
@@ -676,10 +660,13 @@ View
 <main class="restaurants-container">
 
     <section class="vendor-lane-section">
-        <h3 class="title-flat">Here are your recommendations</h3>
-        <ul class="dish-list">
-            {{range .}}
-                <li style="width: 300px; box-shadow: 0 2px 28px 0 rgb(0 0 0 / 12%); padding: 10px;" class="dish-card" data-testid="menu-product">
+        <h3 class="title-flat">Here is your meal plan!</h3>
+        <div style="clear:both;">
+        <ul class="dish-list" style="display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(350px, 1fr));">
+            {{range $i, $a := .}}
+
+                <li style="box-shadow: 0 2px 28px 0 rgb(0 0 0 / 12%); padding: 10px; margin: 15px;" class="dish-card" data-testid="menu-product">
                     <button data-testid="menu-product-button-overlay-id" class="product-button-overlay">
                     </button>
                     <div class="item-react-root">
@@ -691,11 +678,12 @@ View
                                 <p data-testid="menu-product-description" class="dish-description e-description ingredients">
                                     {{.ItemDesc}}</p>
                             </div>
+                            <img style="float: right; height: 100px; margin-top: -100px;" src="https://images.deliveryhero.io/image/fd-sg/Products/3032125.jpg?width=200" />
                         </div>
                         <section class="action-bar">
                             <div class="action-bar-content">
                                 <div class="price-tags-container" aria-hidden="true">
-                                    <span class="price p-price" data-testid="menu-product-price">{{.ItemPrice}}</span>
+                                    <span class="price p-price" data-testid="menu-product-price">${{.ItemPrice}}</span>
                                     <div class="tags-container">
 
                                     </div>
@@ -707,9 +695,11 @@ View
                         </section>
                     </div>
                 </li>
+
             {{end}}
 
         </ul>
+        </div>
     </section>
 
     <div style="clear: both;"></div>

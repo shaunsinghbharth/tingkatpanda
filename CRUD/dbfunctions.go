@@ -2,6 +2,7 @@ package CRUD
 
 import (
 	"database/sql"
+	"fmt"
 	"tingkatpanda/goutils"
 )
 
@@ -33,6 +34,19 @@ func GetUserRecords(db *sql.DB) []map[string]interface{} {
 	}
 
 	returnMaps := goutils.SQLtoMap(results)
+
+	return returnMaps
+}
+
+func GetUserItemsRecords(db *sql.DB, userID string) []map[string]interface{} {
+	results, err := db.Query("Select * FROM GOLIVEDB.UserItems WHERE UserName=?", userID)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	returnMaps := goutils.SQLtoMap(results)
+	fmt.Println("GetUserItems ", returnMaps)
 
 	return returnMaps
 }

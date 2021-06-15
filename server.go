@@ -31,7 +31,7 @@ func main() {
 }
 
 func initaliseHandlers(router *mux.Router) {
-	router.Use(Authenticator)
+	router.Use(Middleware)
 
 	router.HandleFunc("/getfullitem", GetFullItem).Methods("GET")
 
@@ -448,7 +448,7 @@ func DeleteItemRecords(db *sql.DB, ID string) string {
 }
 
 // Middleware function, which will be called for each request
-func Authenticator(next http.Handler) http.Handler {
+func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		param1 := r.URL.Query().Get("key")
 

@@ -157,26 +157,10 @@ View
     
     <div class="logo-wrapper">
         <div class="logo logo-foodpanda">
-            <img src="images/logo.png" style="width: 300px;">
+            <a href="/"> <img src="/images/logo.png" style="width: 300px;"> </a>
         </div>
     </div>
 
-    <div class="language-wrapper">
-        <div class="language-switch">
-                                                                                <a class="active"
-            href="/"
-
-            data-locale="en">
-                en
-            </a>
-                                                                                        <a class=""
-            href="/zh/"
-
-            data-locale="zh">
-                中文
-            </a>
-            </div>
-    </div>
 
     <div class="user-wrapper">
         <div class="account header__account" data-testid="header-account">
@@ -687,16 +671,16 @@ View
         </div>
         <div class="hero-section-form">
 
-<form method="GET" class="location-form restaurants-search-form is-full-address " id="delivery-information-postal-index-form">
+<form method="GET" class="location-form restaurants-search-form is-full-address " id="delivery-information-postal-index-form" action="/select/">
 
 <div class="address-search-container " id="address-search-container">
 
 <div class="input-box js-input-box validation-wrapper big">
-    <input type="text" class="restaurants-search-form__input restaurants__location__input " id="delivery-information-postal-index" name="" placeholder=" " value="" data-msg_error_not_found="Something went wrong! We do not recognise the postal code you entered. Please try again." data-msg_you_probably_mean="Does this postal code match your query?"
+    <input type="text" class="restaurants-search-form__input restaurants__location__input " id="delivery-information-postal-index" name="postcode" placeholder=" " value="" data-msg_error_not_found="Something went wrong! We do not recognise the postal code you entered. Please try again." data-msg_you_probably_mean="Does this postal code match your query?"
             data-msg_error_geolocation="It was not possible to detect your location"
             data-msg_error_empty="We need your address to find restaurants near you" data-msg_error_postal_code="Please enter your postal code or address" data-msg_error_vendor_empty_address="Enter your postal code or address to see if this restaurant delivers to you."/>
     <div class="address-suggestions" id="address-suggestions"></div>
-            <label for="delivery-information-postal-index">Enter your street or postal code</label>
+            <label for="delivery-information-postal-index">Enter your postal code</label>
     </div>
 </div>
 
