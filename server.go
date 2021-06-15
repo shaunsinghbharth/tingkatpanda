@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
+	"tingkatpanda/goutils"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -15,23 +15,6 @@ import (
 type Users struct { // map this type to the record in the Users table
 	UserName string `json:"username"`
 	Password string `json:"password"`
-}
-
-type Shops struct { // map this type to the record in the Shops table
-	ShopId      int    `json:"shopid"`
-	ShopName    string `json:"shopname"`
-	ShopAddress string `json:"shopaddress"`
-	ShopRating  string `json:"shoprating"`
-	ShopPeriod  string `json:"shopperiod"`
-}
-
-type Items struct { // map this type to the record in the Items table
-	ItemId    int     `json:"itemid"`
-	ItemName  string  `json:"itemname"`
-	ItemPrice float64 `json:"itemprice"`
-	ItemDesc  string  `json:"itemdesc"`
-	ItemImg   string  `json:"itemimg"`
-	ShopId    int     `json:"shopid"`
 }
 
 var db sql.DB
@@ -48,6 +31,10 @@ func main() {
 }
 
 func initaliseHandlers(router *mux.Router) {
+	router.Use(Authenticator)
+
+	router.HandleFunc("/getfullitem", GetFullItem).Methods("GET")
+
 	router.HandleFunc("/getusers", GetAllUser).Methods("GET")
 	router.HandleFunc("/getspecificusers", GetUserByUserName).Methods("GET")
 	router.HandleFunc("/editusers", EditUser).Methods("GET")
@@ -66,9 +53,23 @@ func initaliseHandlers(router *mux.Router) {
 }
 
 //GetAllUser get all user data
+func GetFullItem(w http.ResponseWriter, r *http.Request) {
+	param1 := r.URL.Query().Get("item")
+
+	var item []map[string]interface{}
+	item = GetFullItemRecords(&db, param1)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(item)
+
+	fmt.Println("SUCCESS")
+}
+
+//GetAllUser get all user data
 func GetAllUser(w http.ResponseWriter, r *http.Request) {
 
-	var user []Users
+	var user []map[string]interface{}
 	user = GetUserRecords(&db)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -81,7 +82,7 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
 //GetAllShop get all shop data
 func GetAllShop(w http.ResponseWriter, r *http.Request) {
 
-	var shop []Shops
+	var shop []map[string]interface{}
 	shop = GetShopRecords(&db)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -94,7 +95,7 @@ func GetAllShop(w http.ResponseWriter, r *http.Request) {
 //GetAllItem get all item data
 func GetAllItem(w http.ResponseWriter, r *http.Request) {
 
-	var item []Items
+	var item []map[string]interface{}
 	item = GetItemRecords(&db)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -106,10 +107,10 @@ func GetAllItem(w http.ResponseWriter, r *http.Request) {
 
 //GetUserByUserName returns user with specific UserName
 func GetUserByUserName(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("user")
+	userID := r.URL.Query().Get("user")
 
-	var user []Users
-	user = GetSpecificUserRecords(&db, param1)
+	var user []map[string]interface{}
+	user = GetSpecificUserRecords(&db, userID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -120,10 +121,10 @@ func GetUserByUserName(w http.ResponseWriter, r *http.Request) {
 
 //GetShopByShopID returns shop with specific ShopID
 func GetShopByShopID(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("shopid")
+	shopID := r.URL.Query().Get("shopid")
 
-	var shop []Shops
-	shop = GetSpecificShopRecords(&db, param1)
+	var shop []map[string]interface{}
+	shop = GetSpecificShopRecords(&db, shopID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -134,10 +135,10 @@ func GetShopByShopID(w http.ResponseWriter, r *http.Request) {
 
 //GetItemByItemID returns item with specific ItemID
 func GetItemByItemID(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("itemid")
+	itemID := r.URL.Query().Get("itemid")
 
-	var item []Items
-	item = GetSpecificItemRecords(&db, param1)
+	var item []map[string]interface{}
+	item = GetSpecificItemRecords(&db, itemID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -148,11 +149,11 @@ func GetItemByItemID(w http.ResponseWriter, r *http.Request) {
 
 //Edit User
 func EditUser(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("user")
-	param2 := r.URL.Query().Get("password")
+	userID := r.URL.Query().Get("user")
+	password := r.URL.Query().Get("password")
 
-	var user []Users
-	user = EditUserRecords(&db, param1, param2)
+	var user []map[string]interface{}
+	user = EditUserRecords(&db, userID, password)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -163,14 +164,16 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 
 //Edit Shop
 func EditShop(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("shopid")
-	param2 := r.URL.Query().Get("shopname")
-	param3 := r.URL.Query().Get("shopaddress")
-	param4 := r.URL.Query().Get("shoprating")
-	param5 := r.URL.Query().Get("shopperiod")
+	shopID := r.URL.Query().Get("shopid")
+	shopName := r.URL.Query().Get("shopname")
+	shopAddress := r.URL.Query().Get("shopaddress")
+	shopRating := r.URL.Query().Get("shoprating")
+	shopStart := r.URL.Query().Get("shopstart")
+	shopEnd := r.URL.Query().Get("shopend")
+	shopPostCode := r.URL.Query().Get("shoppostcode")
 
-	var shop []Shops
-	shop = EditShopRecords(&db, param1, param2, param3, param4, param5)
+	var shop []map[string]interface{}
+	shop = EditShopRecords(&db, shopID, shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -181,15 +184,15 @@ func EditShop(w http.ResponseWriter, r *http.Request) {
 
 //Edit Item
 func EditItem(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("itemid")
-	param2 := r.URL.Query().Get("itemname")
-	param3 := r.URL.Query().Get("itemprice")
-	param4 := r.URL.Query().Get("itemdesc")
-	param5 := r.URL.Query().Get("itemimg")
-	param6 := r.URL.Query().Get("shopid")
+	itemID := r.URL.Query().Get("itemid")
+	itemName := r.URL.Query().Get("itemname")
+	itemPrice := r.URL.Query().Get("itemprice")
+	itemDesc := r.URL.Query().Get("itemdesc")
+	itemImg := r.URL.Query().Get("itemimg")
+	shopID := r.URL.Query().Get("shopid")
 
-	var item []Items
-	item = EditItemRecords(&db, param1, param2, param3, param4, param5, param6)
+	var item []map[string]interface{}
+	item = EditItemRecords(&db, itemID, itemName, itemPrice, itemDesc, itemImg, shopID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -200,9 +203,9 @@ func EditItem(w http.ResponseWriter, r *http.Request) {
 
 //Delete User
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("user")
+	userID := r.URL.Query().Get("user")
 
-	successMessage := DeleteUserRecords(&db, param1)
+	successMessage := DeleteUserRecords(&db, userID)
 	returnVal := struct {
 		Message string `json:"message"`
 		Value   string `json:"value"`
@@ -217,9 +220,9 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 //Delete Shop
 func DeleteShop(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("shop")
+	shopID := r.URL.Query().Get("shop")
 
-	successMessage := DeleteShopRecords(&db, param1)
+	successMessage := DeleteShopRecords(&db, shopID)
 	returnVal := struct {
 		Message string `json:"message"`
 		Value   string `json:"value"`
@@ -234,9 +237,9 @@ func DeleteShop(w http.ResponseWriter, r *http.Request) {
 
 //Delete Item
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("item")
+	itemID := r.URL.Query().Get("item")
 
-	successMessage := DeleteItemRecords(&db, param1)
+	successMessage := DeleteItemRecords(&db, itemID)
 	returnVal := struct {
 		Message string `json:"message"`
 		Value   string `json:"value"`
@@ -262,115 +265,99 @@ func Connect() sql.DB {
 
 }
 
-func GetUserRecords(db *sql.DB) []Users {
+func GetFullItemRecords(db *sql.DB, itemID string) []map[string]interface{} {
+	results, err := db.Query("Select * FROM GOLIVEDB.Items LEFT JOIN GOLIVEDB.Shops ON Items.ShopID = Shops.ShopID WHERE Items.ItemId = ? UNION Select * FROM GOLIVEDB.Items RIGHT JOIN GOLIVEDB.Shops ON Items.ShopID = Shops.ShopID WHERE Items.ItemId = ?", itemID, itemID)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	/*
+	for results.Next() {
+		var item CombinedItem
+		results.Scan(&item.Item.ItemId, &item.Item.ItemName, &item.Item.ItemDesc, &item.Item.ItemPrice, &item.Item.ItemImg, &item.Item.ShopId,
+			&item.Shop.ShopId, &item.Shop.ShopName, &item.Shop.ShopAddress, &item.Shop.ShopStart, &item.Shop.ShopEnd, &item.Shop.ShopRating)
+		returnVal = append(returnVal, item)
+	}*/
+
+	returnMaps := goutils.SQLtoMap(results)
+
+	return returnMaps
+}
+
+func GetUserRecords(db *sql.DB) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Users")
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Users
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var user Users
-		results.Scan(&user.UserName, &user.Password)
-		returnVal = append(returnVal, user)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func GetShopRecords(db *sql.DB) []Shops {
+func GetShopRecords(db *sql.DB) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Shops")
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Shops
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var shop Shops
-		results.Scan(&shop.ShopId, &shop.ShopName, &shop.ShopAddress, &shop.ShopRating, &shop.ShopPeriod)
-		returnVal = append(returnVal, shop)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func GetItemRecords(db *sql.DB) []Items {
+func GetItemRecords(db *sql.DB) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Items")
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Items
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var item Items
-		results.Scan(&item.ItemId, &item.ItemName, &item.ItemPrice, &item.ItemDesc, &item.ItemImg, &item.ShopId)
-		returnVal = append(returnVal, item)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func GetSpecificUserRecords(db *sql.DB, AN string) []Users {
+func GetSpecificUserRecords(db *sql.DB, AN string) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Users WHERE UserName=?", AN)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Users
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var user Users
-		results.Scan(&user.UserName, &user.Password)
-		returnVal = append(returnVal, user)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func GetSpecificShopRecords(db *sql.DB, SI string) []Shops {
+func GetSpecificShopRecords(db *sql.DB, SI string) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", SI)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Shops
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var shop Shops
-		results.Scan(&shop.ShopId, &shop.ShopName, &shop.ShopAddress, &shop.ShopRating, &shop.ShopPeriod)
-		returnVal = append(returnVal, shop)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func GetSpecificItemRecords(db *sql.DB, II string) []Items {
+func GetSpecificItemRecords(db *sql.DB, II string) []map[string]interface{} {
 	results, err := db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", II)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	var returnVal []Items
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var item Items
-		results.Scan(&item.ItemId, &item.ItemName, &item.ItemPrice, &item.ItemDesc, &item.ItemImg, &item.ShopId)
-		returnVal = append(returnVal, item)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func EditUserRecords(db *sql.DB, AN string, AK string) []Users {
+func EditUserRecords(db *sql.DB, AN string, AK string) []map[string]interface{} {
 	results, err := db.Query("UPDATE GOLIVEDB.Users SET Password=? WHERE UserName=?", AK, AN)
 
 	if err != nil {
@@ -379,57 +366,40 @@ func EditUserRecords(db *sql.DB, AN string, AK string) []Users {
 		results, err = db.Query("Select * FROM GOLIVEDB.Users WHERE UserName=?", AN)
 	}
 
-	var returnVal []Users
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var user Users
-		results.Scan(&user.UserName, &user.Password)
-		returnVal = append(returnVal, user)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func EditShopRecords(db *sql.DB, ID string, SN string, SA string, SR string, SP string) []Shops {
+//EditShopRecords(&db, shopID, shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode)
+func EditShopRecords(db *sql.DB, shopID string, shopName string, shopAddress string, shopRating string, shopStart string, shopEnd string, shopPostCode string) []map[string]interface{} {
 	//func EditShopRecords(db *sql.DB, ID int, SN string, SA string, SR string, SP string) []Shops {
-	results, err := db.Query("UPDATE Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopPeriod=? WHERE ShopId=?", SN, SA, SR, SP, ID)
+	results, err := db.Query("UPDATE Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopStart=?, ShopEnd = ?, ShopPostCode = ? WHERE ShopId=?", shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode, shopID)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", ID)
+		results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", shopID)
 	}
 
-	var returnVal []Shops
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var shop Shops
-		results.Scan(&shop.ShopId, &shop.ShopName, &shop.ShopAddress, &shop.ShopRating, &shop.ShopPeriod)
-		returnVal = append(returnVal, shop)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
-func EditItemRecords(db *sql.DB, ID string, IN string, IP string, DE string, IG string, SI string) []Items {
-	//func EditItemRecords(db *sql.DB, ID int, IN string, IP float64, DE string, IG string, SI int) []Items {
-	results, err := db.Query("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", IN, IP, DE, IG, SI, ID)
+//EditItemRecords(&db, itemID, itemName, itemPrice, itemDesc, itemImg, shopID)
+func EditItemRecords(db *sql.DB, ItemID string, ItemName string, ItemPrice string, ItemDescription string, ItemImage string, ShopID string) []map[string]interface{} {
+	results, err := db.Query("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", ItemName, ItemPrice, ItemDescription, ItemImage, ShopID, ItemID)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ID)
+		results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ItemID)
 	}
 
-	var returnVal []Items
+	returnMaps := goutils.SQLtoMap(results)
 
-	for results.Next() {
-		var item Items
-		results.Scan(&item.ItemId, &item.ItemName, &item.ItemPrice, &item.ItemDesc, &item.ItemImg, &item.ShopId)
-		returnVal = append(returnVal, item)
-	}
-
-	return returnVal
+	return returnMaps
 }
 
 func DeleteUserRecords(db *sql.DB, AN string) string {
@@ -475,4 +445,17 @@ func DeleteItemRecords(db *sql.DB, ID string) string {
 	}
 
 	return "Delete Success"
+}
+
+// Middleware function, which will be called for each request
+func Authenticator(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		param1 := r.URL.Query().Get("key")
+
+		if param1 != "KEYVALUE"{
+			http.Error(w, "Forbidden", http.StatusForbidden)
+		}else{
+			next.ServeHTTP(w, r)
+		}
+	})
 }

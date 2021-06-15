@@ -5,6 +5,11 @@ type Stack struct {
 	Size int
 }
 
+type Node struct{
+	Item string
+	next *Node
+}
+
 func (p *Stack) Push(name string) error {
 	newNode := &Node{
 		Item: name,
