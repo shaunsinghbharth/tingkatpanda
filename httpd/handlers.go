@@ -14,6 +14,10 @@ import (
 )
 
 func ServeHTTP(res http.ResponseWriter, req *http.Request){
+	if manager.ValidSession(req) == false{
+		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+
 	fmt.Println("Main Handler")
 	fmt.Println(req.Cookie("tingkatpanda"))
 
@@ -41,6 +45,10 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 }
 
 func ShowSelect(res http.ResponseWriter, req *http.Request){
+	if manager.ValidSession(req) == false{
+		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+
 	var p *Page
 
 	p = &Page{
@@ -154,7 +162,66 @@ func distance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, unit ...st
 	return dist
 }
 
+func Authenticate(res http.ResponseWriter, req *http.Request){
+	fmt.Println("Authentication Redirector")
+	fmt.Println(req.Cookie("tingkatpanda"))
+
+	if err := req.ParseForm(); err != nil {
+		fmt.Fprintf(res, "ParseForm() err: %v", err)
+		return
+	}
+
+	switch req.Method {
+	case "POST":
+		username := req.FormValue("user")
+		fmt.Println("USER ", username)
+		password := req.FormValue("password")
+
+		token := manager.CreateSession(username, password)
+
+		fmt.Println(token)
+		http.SetCookie(res, token)
+
+		http.Redirect(res,req,"/",http.StatusTemporaryRedirect)
+	}
+
+	if manager.ValidSession(req) == false{
+		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+
+	var p *Page
+
+	p = &Page{
+		Title: "",
+		Body:  nil,
+	}
+
+	p, _ = loadPage("login.html")
+
+	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
+	p.Body.Execute(res, nil)
+}
+
+func Login(res http.ResponseWriter, req *http.Request){
+	fmt.Println("Login Page")
+	var p *Page
+
+	p = &Page{
+		Title: "",
+		Body:  nil,
+	}
+
+	p, _ = loadPage("login.html")
+
+	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
+	p.Body.Execute(res, nil)
+}
+
 func ShowRecommendation(res http.ResponseWriter, req *http.Request){
+	if manager.ValidSession(req) == false{
+		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+
 	user := req.URL.Query().Get("user")
 	postcode := req.URL.Query().Get("postcode")
 	price, _ := strconv.ParseFloat(req.URL.Query().Get("price"), 64)
@@ -183,7 +250,6 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 				if dist < 5 && price == itemPrice && category == itemCategory{
 					output = append(output, tempItem[0])
 				}
-
 		}
 
 
@@ -327,6 +393,7 @@ func DELETEALLSESSIONS(res http.ResponseWriter, req *http.Request) {
 	io.WriteString(res, "<html><script type=\"text/javascript\">\nalert(\"DESTROYING ALL SESSIONS\");</script>\n</html>")
 
 	for _,v := range manager.Users{
+		fmt.Println("USER DELETING ", v)
 		manager.DeleteSession(v.Username)
 	}
 	http.Redirect(res, req, "/", http.StatusTemporaryRedirect)

@@ -41,14 +41,14 @@ func Start(wg sync.WaitGroup){
 	rs := http.FileServer(http.Dir("htdocs/reference_files/"))
 	http.Handle("/reference_files/", http.StripPrefix("/reference_files/", rs))
 
+
 	http.HandleFunc("/", ServeHTTP)
 	http.HandleFunc("/recommend/", ShowRecommendation)
 	http.HandleFunc("/select/", ShowSelect)
+	http.HandleFunc("/login/", Login)
+	http.HandleFunc("/authenticate/", Authenticate)
 
-	//ADMIN ONLY
-	http.HandleFunc("/deletesessions/", DELETEALLSESSIONS)
-	http.HandleFunc("/deleteusers/", DELETEALLUSERS)
-
+	http.HandleFunc("/destroy/", Destroy)
 	err := srv.ListenAndServe()
 	if err != nil{
 		panic(nil)

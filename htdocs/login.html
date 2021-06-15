@@ -72,14 +72,6 @@
                 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
-
-        <script type="application/javascript">
-            function getCookie(name) {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop().split(';').shift();
-            }
-        </script>
             </head>
     <body class="country-sg home">
                             
@@ -195,7 +187,6 @@ View
                 title="Go to My Orders and reorder in seconds!"
                 data-user-name=""
             >
-                <script>getCookie("name")</script>
             </span>
             <span class="header__account__toggle__arrow">
                 <svg width="12" height="14" xmlns="http://www.w3.org/2000/svg">
@@ -671,30 +662,28 @@ View
 
         <div class="hero-section-text ">
             <h1>
-              It&#039;s the food you love, curated
+              Please log in to use tingkat panda
             </h1>
-            <p>
 
-            </p>
+
+
         </div>
         <div class="hero-section-form">
 
-<form method="GET" class="location-form restaurants-search-form is-full-address " id="delivery-information-postal-index-form" action="/select/">
+<form method="POST" class="location-form restaurants-search-form is-full-address " id="delivery-information-postal-index-form" action="/authenticate/">
 
-<div class="address-search-container " id="address-search-container">
+    <div class="row">
 
-<div class="input-box js-input-box validation-wrapper big">
-    <input type="text" class="restaurants-search-form__input restaurants__location__input " id="delivery-information-postal-index" name="postcode" placeholder=" " value="" data-msg_error_not_found="Something went wrong! We do not recognise the postal code you entered. Please try again." data-msg_you_probably_mean="Does this postal code match your query?"
-            data-msg_error_geolocation="It was not possible to detect your location"
-            data-msg_error_empty="We need your address to find restaurants near you" data-msg_error_postal_code="Please enter your postal code or address" data-msg_error_vendor_empty_address="Enter your postal code or address to see if this restaurant delivers to you."/>
-    <div class="address-suggestions" id="address-suggestions"></div>
-            <label for="delivery-information-postal-index">Enter your postal code</label>
+        <label for="UserInput">Your username</label>
+        <input class="u-full-width" type="text" placeholder="user" id="UserInput" name="user"><br>
+        <label for="PasswordInput">Your Password</label>
+        <input class="u-full-width" type="password" placeholder="password" id="PasswordInput" name="password">
+
     </div>
-</div>
 
     <div class="button-container two-buttons">
 
-<button class="button restaurants-search-form__button js-restaurants-search-pickup js-restaurants-search-button gtm-homepage-pickup-button" data-gtm-cta="findRestaurant_main" data-testid="pickup_button">Curate</button>
+<button class="button restaurants-search-form__button js-restaurants-search-pickup js-restaurants-search-button gtm-homepage-pickup-button" data-gtm-cta="findRestaurant_main" data-testid="pickup_button">Login</button>
                 <span class="tooltip-pickup" title="Get your favorite meals to go with our new pick-up feature! Hungry?"></span>
 
 

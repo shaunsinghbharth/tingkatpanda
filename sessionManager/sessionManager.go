@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 type SessionManager struct{
@@ -23,6 +24,27 @@ type Users struct{
 	Password  	string `json: "Password"`
 	Firstname 	string `json: "Firstname"`
 	Lastname  	string `json: "Lastname"`
+}
+
+type CustomCookie struct{
+	Name  string
+	Value string
+
+	Path       string    // optional
+	Domain     string    // optional
+	Expires    time.Time // optional
+	RawExpires string    // for reading cookies only
+
+	// MaxAge=0 means no 'Max-Age' attribute specified.
+	// MaxAge<0 means delete cookie now, equivalently 'Max-Age: 0'
+	// MaxAge>0 means Max-Age attribute present and given in seconds
+	MaxAge   int
+	Secure   bool
+	HttpOnly bool
+	SameSite http.SameSite
+	Raw      string
+	Unparsed []string // Raw text of unparsed attribute-value pairs
+	User	string
 }
 
 
@@ -104,16 +126,18 @@ func (session *SessionManager)CreateSession(username string, password string) *h
 			return setcookie
 		}
 	}
+
 	fmt.Println("USERNAME or PASSWORD INVALID")
 	return nil
 }
 
 func (session *SessionManager)ValidSession(req *http.Request) bool{
-	cookie , err := req.Cookie(session.SessionName)
+	cookie , _ := req.Cookie(session.SessionName)
 
-	if cookie != nil || err != nil{
+	if cookie != nil{
 		return true
 	}
+
 	return false
 }
 
