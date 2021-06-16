@@ -1,1 +1,1 @@
-web: ./bin/tingkatpanda
+web: /bin/tingkatpanda
