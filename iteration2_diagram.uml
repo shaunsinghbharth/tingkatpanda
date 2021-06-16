@@ -1,0 +1,507 @@
+@startuml
+namespace enginator {
+    class DistancePair << (S,Aquamarine) >> {
+        + Key <font color=blue>interface</font>{}
+        + Distance float64
+
+    }
+    class DistancePairList << (S,Aquamarine) >> {
+        + Swap(i int, j int) 
+        + Len() int
+        + Less(i int, j int) bool
+
+    }
+    class EnginatorItem << (S,Aquamarine) >> {
+        - key <font color=blue>interface</font>{}
+        - data <font color=blue>map</font>[<font color=blue>interface</font>{}]float64
+
+        + Key() <font color=blue>interface</font>{}
+        + Data() <font color=blue>map</font>[<font color=blue>interface</font>{}]float64
+
+    }
+    class EnginatorTable << (S,Aquamarine) >> {
+        - name string
+        - items <font color=blue>map</font>[<font color=blue>interface</font>{}]*EnginatorItem
+        - logger *log.Logger
+        - loadData <font color=blue>func</font>(<font color=blue>interface</font>{}) *EnginatorItem
+        - addedItem <font color=blue>func</font>(*EnginatorItem) 
+        - aboutToDeleteItem <font color=blue>func</font>(*EnginatorItem) 
+
+        - log(v ...<font color=blue>interface</font>{}) 
+
+        + Count() int
+        + SetDataLoader(f <font color=blue>func</font>(<font color=blue>interface</font>{}) *EnginatorItem) 
+        + SetAddedItemCallback(f <font color=blue>func</font>(*EnginatorItem) ) 
+        + SetAboutToDeleteItemCallback(f <font color=blue>func</font>(*EnginatorItem) ) 
+        + SetLogger(logger *log.Logger) 
+        + Add(key <font color=blue>interface</font>{}, data <font color=blue>map</font>[<font color=blue>interface</font>{}]float64) *EnginatorItem
+        + Delete(key <font color=blue>interface</font>{}) (*EnginatorItem, error)
+        + Exists(key <font color=blue>interface</font>{}) bool
+        + Value(key <font color=blue>interface</font>{}) (*EnginatorItem, error)
+        + Flush() 
+        + Recommend(key <font color=blue>interface</font>{}) (DistancePairList, error)
+        + Neighbors(key <font color=blue>interface</font>{}) (DistancePairList, error)
+
+    }
+    class enginator.DistancePairList << (T, #FF7700) >>  {
+    }
+}
+"sync.RWMutex" *-- "enginator.EnginatorItem"
+"sync.RWMutex" *-- "enginator.EnginatorTable"
+
+
+namespace engine {
+    class RedConnection << (S,Aquamarine) >> {
+        - rconn redis.Conn
+
+        - getUserItems(user string, max int) ([]string, error)
+        - getItemScores(item string, max int) (<font color=blue>map</font>[string]string, error)
+        - getSimilarityCandidates(user string, max int) ([]string, error)
+        - getSuggestCandidates(user string, max int) ([]string, error)
+        - calcSimilarity(user string, simuser string) (float64, error)
+
+        + CloseConn() 
+        + Rate(item string, user string, score float64) error
+        + GetUserSuggestions(user string, max int) ([]string, error)
+        + BatchUpdateSimilarUsers(max int) error
+        + UpdateSuggestedItems(user string, max int) error
+        + CalcItemProbability(user string, item string) (float64, error)
+
+    }
+}
+
+
+namespace goutils {
+    class BSTNode << (S,Aquamarine) >> {
+        - bal int
+
+        + Value string
+        + Data string
+        + Left *BSTNode
+        + Right *BSTNode
+
+        - rotateLeft(c *BSTNode) 
+        - rotateRight(c *BSTNode) 
+        - rotateRightLeft(c *BSTNode) 
+        - rotateLeftRight(c *BSTNode) 
+        - rebalance(c *BSTNode) 
+
+        + Insert(value string, data string) bool
+        + Find(s string) (string, bool)
+        + Dump(i int, lr string) 
+
+    }
+    class BinarySearchTree << (S,Aquamarine) >> {
+        + Root *BSTNode
+
+        - rebalance() 
+
+        + Insert(value string, data string) 
+        + Find(s string) (string, bool)
+        + Traverse(n *BSTNode, f <font color=blue>func</font>(*BSTNode) ) 
+        + Dump() 
+
+    }
+    class Graph << (S,Aquamarine) >> {
+        - nodes []*GraphNode
+
+        + AddNode() int
+        + AddEdge(n1 int, n2 int, w int) 
+        + Neighbors(id int) []int
+        + Nodes() []int
+        + Edges() [][]int
+
+    }
+    class GraphNode << (S,Aquamarine) >> {
+        - id int
+        - edges <font color=blue>map</font>[int]int
+
+    }
+    class Node << (S,Aquamarine) >> {
+        - next *Node
+
+        + Item string
+
+    }
+    class PriorityNode << (S,Aquamarine) >> {
+        - next *PriorityNode
+        - prev *PriorityNode
+        - priority int
+
+        + Item string
+
+    }
+    class PriorityQueue << (S,Aquamarine) >> {
+        + Front *PriorityNode
+        + Back *PriorityNode
+        + Size int
+
+        + Enqueue(name string, priority int) error
+        + Dequeue() string
+
+    }
+    class Queue << (S,Aquamarine) >> {
+        + Front *QueueNode
+        + Back *QueueNode
+        + Size int
+
+        + Enqueue(name string) error
+        + Dequeue() string
+
+    }
+    class QueueNode << (S,Aquamarine) >> {
+        - next *QueueNode
+
+        + Item string
+
+    }
+    class SortedArray << (S,Aquamarine) >> {
+        - rSeq(toMatch int, currentIndex int) int
+        - rBinary(toMatch int, first int, last int) int
+        - rQuickSort(start int, end int) 
+
+        + Sort() 
+        + SelectionSort() 
+        + InsertionSort() 
+        + SequentialSearch(toMatch int) int
+        + RecursiveSequentialSearch(toMatch int) int
+        + RecursiveBinarySearch(toMatch int) int
+        + BinarySearch(toMatch int) int
+        + QuickSort() 
+        + MergeSort() 
+        + HybridSort() 
+        + InsertionRecursiveMergeSort(left int, right int) 
+
+    }
+    class Stack << (S,Aquamarine) >> {
+        + Top *Node
+        + Size int
+
+        + Push(name string) error
+        + Pop() string
+
+    }
+    interface UndirectedWeightLister  {
+        + WeightedEdges() graph.WeightedEdges
+
+    }
+    interface WeightedBuilder  {
+        + AddNode( graph.Node) 
+        + SetWeightedEdge( graph.WeightedEdge) 
+
+    }
+    class byWeight << (S,Aquamarine) >> {
+        + Len() int
+        + Less(i int, j int) bool
+        + Swap(i int, j int) 
+
+    }
+    class djSet << (S,Aquamarine) >> {
+        - add(e int64) 
+        - union(a *dsNode, b *dsNode) 
+        - find(e int64) *dsNode
+
+    }
+    class dsNode << (S,Aquamarine) >> {
+        - parent *dsNode
+        - rank int
+
+    }
+    class goutils.SortedArray << (T, #FF7700) >>  {
+    }
+    class goutils.byWeight << (T, #FF7700) >>  {
+    }
+    class goutils.djSet << (T, #FF7700) >>  {
+    }
+    class primQueue << (S,Aquamarine) >> {
+        - indexOf <font color=blue>map</font>[int64]int
+        - nodes []simple.WeightedEdge
+
+        - key(u graph.Node) (float64, bool)
+        - update(u graph.Node, v graph.Node, key float64) 
+
+        + Less(i int, j int) bool
+        + Swap(i int, j int) 
+        + Len() int
+        + Push(x <font color=blue>interface</font>{}) 
+        + Pop() <font color=blue>interface</font>{}
+
+    }
+    class singleLinkedList << (S,Aquamarine) >> {
+        - head *strNode
+        - size int
+
+        + AddNode(name string) error
+        + PrintAllNodes() error
+        + Remove(index int) error
+        + AddAtPos(index int, s string) error
+        + Get(index int) string
+
+    }
+    class strNode << (S,Aquamarine) >> {
+        - item string
+        - next *strNode
+
+    }
+    class "[]graph.WeightedEdge" as graphWeightedEdge {
+        'This class was created so that we can correctly have an alias pointing to this name. Since it contains dots that can break namespaces
+    }
+}
+
+
+namespace httpd {
+    class Page << (S,Aquamarine) >> {
+        + Title string
+        + Body *template.Template
+
+    }
+    class empty << (S,Aquamarine) >> {
+    }
+}
+
+
+namespace main {
+    class Items << (S,Aquamarine) >> {
+        + ItemId int
+        + ItemName string
+        + ItemPrice float64
+        + ItemDesc string
+        + ItemImg string
+        + ShopId int
+
+    }
+    class Shop << (S,Aquamarine) >> {
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopPeriod string
+
+    }
+    class Shops << (S,Aquamarine) >> {
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopPeriod string
+
+    }
+    class User << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+
+    }
+    class Users << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+        + UserName string
+        + Password string
+
+    }
+}
+
+
+namespace models {
+    class CombinedItem << (S,Aquamarine) >> {
+        + ItemId int
+        + ItemName string
+        + ItemPrice float64
+        + ItemDesc string
+        + ItemImg string
+        + ItemCategory string
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopStart string
+        + ShopEnd string
+        + ShopPostCode string
+
+    }
+    class Item << (S,Aquamarine) >> {
+        + ItemId int
+        + ItemName string
+        + ItemPrice float64
+        + ItemDesc string
+        + ItemImg string
+        + ShopId int
+
+    }
+    class Items << (S,Aquamarine) >> {
+        + ItemId int
+        + ItemName string
+        + ItemPrice float64
+        + ItemDesc string
+        + ItemImg string
+        + ItemCategory string
+        + ShopId int
+
+    }
+    class Shop << (S,Aquamarine) >> {
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopPeriod string
+
+    }
+    class Shops << (S,Aquamarine) >> {
+        + ShopId int
+        + ShopName string
+        + ShopAddress string
+        + ShopRating string
+        + ShopStart string
+        + ShopEnd string
+        + ShopPostCode string
+
+    }
+    class User << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+
+    }
+    class UserItems << (S,Aquamarine) >> {
+        + ItemID int
+        + Rating int
+        + UserName string
+
+    }
+    class Users << (S,Aquamarine) >> {
+        + UserName string
+        + Password string
+
+    }
+}
+
+
+namespace scheduler {
+    class Job << (S,Aquamarine) >> {
+        - interval uint64
+        - jobFunc string
+        - unit timeUnit
+        - atTime time.Duration
+        - err error
+        - loc *time.Location
+        - lastRun time.Time
+        - nextRun time.Time
+        - startDay time.Weekday
+        - funcs <font color=blue>map</font>[string]<font color=blue>interface</font>{}
+        - fparams <font color=blue>map</font>[string][]<font color=blue>interface</font>{}
+        - lock bool
+        - tags []string
+
+        - shouldRun() bool
+        - run() ([]reflect.Value, error)
+        - periodDuration() (time.Duration, error)
+        - roundToMidnight(t time.Time) time.Time
+        - scheduleNextRun() error
+        - mustInterval(i uint64) error
+        - setUnit(unit timeUnit) *Job
+
+        + Err() error
+        + Do(jobFun <font color=blue>interface</font>{}, params ...<font color=blue>interface</font>{}) error
+        + At(t string) *Job
+        + GetAt() string
+        + Loc(loc *time.Location) *Job
+        + NextScheduledTime() time.Time
+        + From(t *time.Time) *Job
+        + Seconds() *Job
+        + Minutes() *Job
+        + Hours() *Job
+        + Second() *Job
+        + Minute() *Job
+        + Hour() *Job
+        + GetWeekday() time.Weekday
+        + Lock() *Job
+
+    }
+    interface Locker  {
+        + Lock(key string) (bool, error)
+        + Unlock(key string) error
+
+    }
+    class Scheduler << (S,Aquamarine) >> {
+        - jobs []*Job
+        - size int
+        - loc *time.Location
+
+        - getRunnableJobs() ([]*Job, int)
+
+        + Jobs() []*Job
+        + Len() int
+        + Swap(i int, j int) 
+        + Less(i int, j int) bool
+        + ChangeLoc(newLocation *time.Location) 
+        + NextRun() (*Job, time.Time)
+        + Every(interval uint64) *Job
+        + RunPending() 
+        + RunAll() 
+        + RunAllwithDelay(d int) 
+        + Scheduled(j <font color=blue>interface</font>{}) bool
+        + Clear() 
+        + Start() <font color=blue>chan</font> bool
+
+    }
+    class scheduler.timeUnit << (T, #FF7700) >>  {
+    }
+}
+
+
+namespace sessionManager {
+    class CustomCookie << (S,Aquamarine) >> {
+        + Name string
+        + Value string
+        + Path string
+        + Domain string
+        + Expires time.Time
+        + RawExpires string
+        + MaxAge int
+        + Secure bool
+        + HttpOnly bool
+        + SameSite http.SameSite
+        + Raw string
+        + Unparsed []string
+        + User string
+
+    }
+    class SessionManager << (S,Aquamarine) >> {
+        + Users []Users
+        + SessionName string
+
+        + Init(sessionName string) *SessionManager
+        + GetUUID(index int) string
+        + GetUserName(index int) string
+        + GetFirstName(index int) string
+        + GetLastName(index int) string
+        + GetPassword(index int) string
+        + RegisterUser(username string, password string, firstname string, lastname string) *http.Cookie
+        + CreateSession(username string, password string) *http.Cookie
+        + ValidSession(req *http.Request) bool
+        + GetCurrentUser(req *http.Request) string
+        + GetCurrentUserObject(req *http.Request) Users
+        + Dump() error
+        + DestroySession(req *http.Request) *http.Cookie
+        + EditUser(uuid string, password string, username string, firstname string, lastname string) 
+        + IsAdmin(req *http.Request) bool
+        + DeleteUser(username string) bool
+        + DeleteSession(username string) bool
+
+    }
+    class Users << (S,Aquamarine) >> {
+        + UUID string
+        + Type string
+        + Username string
+        + Password string
+        + Firstname string
+        + Lastname string
+
+    }
+}
+
+
+"__builtin__.[]int" #.. "goutils.SortedArray"
+"__builtin__.int" #.. "scheduler.timeUnit"
+"enginator.[]DistancePair" #.. "enginator.DistancePairList"
+"goutils.<font color=blue>map</font>[int64]*dsNode" #.. "goutils.djSet"
+"goutils.graphWeightedEdge" #.. "goutils.byWeight"
+@enduml
