@@ -1,4 +1,5 @@
 @startuml
+title tingkatpanda
 namespace enginator {
     class DistancePair << (S,Aquamarine) >> {
         + Key <font color=blue>interface</font>{}
@@ -48,27 +49,6 @@ namespace enginator {
 }
 "sync.RWMutex" *-- "enginator.EnginatorItem"
 "sync.RWMutex" *-- "enginator.EnginatorTable"
-
-
-namespace engine {
-    class RedConnection << (S,Aquamarine) >> {
-        - rconn redis.Conn
-
-        - getUserItems(user string, max int) ([]string, error)
-        - getItemScores(item string, max int) (<font color=blue>map</font>[string]string, error)
-        - getSimilarityCandidates(user string, max int) ([]string, error)
-        - getSuggestCandidates(user string, max int) ([]string, error)
-        - calcSimilarity(user string, simuser string) (float64, error)
-
-        + CloseConn() 
-        + Rate(item string, user string, score float64) error
-        + GetUserSuggestions(user string, max int) ([]string, error)
-        + BatchUpdateSimilarUsers(max int) error
-        + UpdateSuggestedItems(user string, max int) error
-        + CalcItemProbability(user string, item string) (float64, error)
-
-    }
-}
 
 
 namespace goutils {
@@ -259,48 +239,6 @@ namespace httpd {
     }
 }
 
-
-namespace main {
-    class Items << (S,Aquamarine) >> {
-        + ItemId int
-        + ItemName string
-        + ItemPrice float64
-        + ItemDesc string
-        + ItemImg string
-        + ShopId int
-
-    }
-    class Shop << (S,Aquamarine) >> {
-        + ShopId int
-        + ShopName string
-        + ShopAddress string
-        + ShopRating string
-        + ShopPeriod string
-
-    }
-    class Shops << (S,Aquamarine) >> {
-        + ShopId int
-        + ShopName string
-        + ShopAddress string
-        + ShopRating string
-        + ShopPeriod string
-
-    }
-    class User << (S,Aquamarine) >> {
-        + UserName string
-        + Password string
-
-    }
-    class Users << (S,Aquamarine) >> {
-        + UserName string
-        + Password string
-        + UserName string
-        + Password string
-
-    }
-}
-
-
 namespace models {
     class CombinedItem << (S,Aquamarine) >> {
         + ItemId int
@@ -318,15 +256,6 @@ namespace models {
         + ShopPostCode string
 
     }
-    class Item << (S,Aquamarine) >> {
-        + ItemId int
-        + ItemName string
-        + ItemPrice float64
-        + ItemDesc string
-        + ItemImg string
-        + ShopId int
-
-    }
     class Items << (S,Aquamarine) >> {
         + ItemId int
         + ItemName string
@@ -337,14 +266,6 @@ namespace models {
         + ShopId int
 
     }
-    class Shop << (S,Aquamarine) >> {
-        + ShopId int
-        + ShopName string
-        + ShopAddress string
-        + ShopRating string
-        + ShopPeriod string
-
-    }
     class Shops << (S,Aquamarine) >> {
         + ShopId int
         + ShopName string
@@ -353,11 +274,6 @@ namespace models {
         + ShopStart string
         + ShopEnd string
         + ShopPostCode string
-
-    }
-    class User << (S,Aquamarine) >> {
-        + UserName string
-        + Password string
 
     }
     class UserItems << (S,Aquamarine) >> {

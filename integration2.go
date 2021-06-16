@@ -2,7 +2,7 @@ package main
 
 import (
 	"sync"
-	"tingkatpanda/CRUD"
+	"tingkatpanda/crud"
 	"tingkatpanda/httpd"
 )
 
@@ -14,7 +14,7 @@ func main(){
 	var wg sync.WaitGroup
 
 	wg.Add(2)
-	go CRUD.Initialise(wg)
+	go crud.Initialise(wg)
 	go httpd.Start(wg)
 
 	wg.Wait()
