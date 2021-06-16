@@ -3,7 +3,6 @@ package httpd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/patrickmn/go-cache"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -11,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"tingkatpanda/cachinator"
 	"tingkatpanda/enginator"
 	"tingkatpanda/models"
 )
@@ -271,7 +271,7 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 		} else {
 			tempItem = enginator.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
 			mutex.Lock()
-			c.Set(strconv.Itoa(rec.Key.(int)), output, cache.DefaultExpiration)
+			c.Set(strconv.Itoa(rec.Key.(int)), output, cachinator.DefaultExpiration)
 			mutex.Unlock()
 		}
 
