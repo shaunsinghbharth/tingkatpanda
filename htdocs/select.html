@@ -830,7 +830,7 @@ View
                                                     </div>
                                                 </section>
 
-    <form action="/recommend/" method="GET">
+    <form action="/recommend/" method="POST">
         <input type="hidden" id="cuisine-type" name="category" value="">
         <input type="hidden" id="postcode" name="postcode" value="">
         <input type="hidden" id="user" name="user" value="shaunpaulsingh">
@@ -850,11 +850,11 @@ View
 
     <section class="vendor-lane-section">
         <h3 class="title-flat">Which meals would you like to have?</h3>
-        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="morning" name="timing" value="1">
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="morning" name="timing" value="0">
         <label for="morning">Mornings</label>
-        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="afternoon" name="timing" value="2">
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="afternoon" name="timing" value="1">
         <label for="afternoon">Afternoons</label>
-        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="night" name="timing" value="3">
+        <input style="border-radius: 30px; background: #DF0F64; color: #fff; border: 0px; padding: 5px;" type="checkbox" id="night" name="timing" value="2">
         <label for="night">Nights</label>
 
         <div style="clear: both;"></div>

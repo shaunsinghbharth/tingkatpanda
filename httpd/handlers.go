@@ -3,20 +3,26 @@ package httpd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/patrickmn/go-cache"
 	"html/template"
 	"io"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"strconv"
+	"sync"
 	"tingkatpanda/enginator"
 	"tingkatpanda/models"
 )
 
 func ServeHTTP(res http.ResponseWriter, req *http.Request){
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
 	if manager.ValidSession(req) == false{
 		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
 	}
+	mutex.Unlock()
 
 	fmt.Println("Main Handler")
 	fmt.Println(req.Cookie("tingkatpanda"))
@@ -45,9 +51,13 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 }
 
 func ShowSelect(res http.ResponseWriter, req *http.Request){
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
 	if manager.ValidSession(req) == false{
 		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
 	}
+	mutex.Unlock()
 
 	var p *Page
 
@@ -74,15 +84,15 @@ func Populate(key string) *enginator.EnginatorTable{
 			fmt.Println(v.UserName)
 			rating := float64(val.Rating)
 			temp[val.ItemID] = rating
+
+			fmt.Println("POPULATING ", val.ItemID, val.Rating)
 		}
 		table.Add(v.UserName, temp)
 	}
-
 	return table
 }
 
 func GetCoordinates(postcode string) (float64, float64)  {
-	fmt.Println("COORDSPOSTCODE", postcode)
 	///commonapi/search?searchVal={SearchText}&returnGeom={Y/N}&getAddrDetails={Y/N}&pageNum={PageNumber}
 	client := &http.Client{}
 
@@ -185,10 +195,13 @@ func Authenticate(res http.ResponseWriter, req *http.Request){
 
 		http.Redirect(res,req,"/",http.StatusTemporaryRedirect)
 	}
+	var mutex = &sync.Mutex{}
 
+	mutex.Lock()
 	if manager.ValidSession(req) == false{
 		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
 	}
+	mutex.Unlock()
 
 	var p *Page
 
@@ -199,7 +212,6 @@ func Authenticate(res http.ResponseWriter, req *http.Request){
 
 	p, _ = loadPage("login.html")
 
-	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
 	p.Body.Execute(res, nil)
 }
 
@@ -219,55 +231,81 @@ func Login(res http.ResponseWriter, req *http.Request){
 }
 
 func ShowRecommendation(res http.ResponseWriter, req *http.Request){
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
 	if manager.ValidSession(req) == false{
 		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
 	}
+	mutex.Unlock()
 
-	user := req.URL.Query().Get("user")
-	postcode := req.URL.Query().Get("postcode")
-	fmt.Println("POSTCODE ", postcode)
-	price, _ := strconv.ParseFloat(req.URL.Query().Get("price"), 64)
-	category := req.URL.Query().Get("category")
+
+	var user string
+	var postcode string
+	var timings []string
+	var category string
+	var price float64
+
+	switch req.Method {
+	case "POST":
+		user = req.FormValue("user")
+		postcode = req.FormValue("postcode")
+		timings = req.Form["timing"]
+		category = req.FormValue("category")
+		price, _ = strconv.ParseFloat(req.FormValue("price"),64)
+	}
 	lat, long := GetCoordinates(postcode)
 
 	table := Populate("KEYVALUE")
 	recs, _ := table.Recommend(user)
 
-	var output []models.CombinedItem
-		for i, rec := range recs {
-			fmt.Println("Recommending", rec.Key, "with score:", rec.Distance, "at index:", i)
+	var output map[int][]models.CombinedItem
+	output = make(map[int][]models.CombinedItem)
+	for i, rec := range recs {
+		fmt.Println("Recommending", rec.Key, "with score:", rec.Distance, "at index:", i)
 
-				var tempItem []models.CombinedItem
-				//cacheOutput, found := c.Get(strconv.Itoa(rec.Key.(int)))
-				//if found {
-					//temp = cacheOutput.([]models.CombinedItem)
-				//} else {
-					tempItem = enginator.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
-					//c.Set(strconv.Itoa(rec.Key.(int)), output, cache.DefaultExpiration)
-				//}
-				shoplat, shoplong := GetCoordinates(tempItem[0].ShopPostCode)
-				itemPrice := tempItem[0].ItemPrice
-				itemCategory := tempItem[0].ItemCategory
-				dist := distance(lat,long,shoplat,shoplong, "K")
-				if dist < 5 && price == itemPrice && category == itemCategory{
-					output = append(output, tempItem[0])
-				}
+		var tempItem []models.CombinedItem
+		cacheOutput, found := c.Get(strconv.Itoa(rec.Key.(int)))
+		if found {
+			tempItem = cacheOutput.([]models.CombinedItem)
+		} else {
+			tempItem = enginator.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
+			mutex.Lock()
+			c.Set(strconv.Itoa(rec.Key.(int)), output, cache.DefaultExpiration)
+			mutex.Unlock()
 		}
 
-
-	fmt.Println("Recommendation Handler")
-	var p *Page
-
-	p = &Page{
-		Title: "",
-		Body:  nil,
+		shoplat, shoplong := GetCoordinates(tempItem[0].ShopPostCode)
+		itemPrice := tempItem[0].ItemPrice
+		itemCategory := tempItem[0].ItemCategory
+		dist := distance(lat,long,shoplat,shoplong, "K")
+		if dist < 5 && price == itemPrice && category == itemCategory{
+			for i,v := range timings {
+				v_int, _ := strconv.Atoi(v)
+				if v_int == tempItem[0].ItemTiming {
+					output[i] = append(output[i], tempItem[0])
+				}
+			}
+		}
 	}
 
-	p, _ = loadPage("results.gohtml")
+	var funcMap = template.FuncMap{
+		"mod": mod,
+		"equal": equal,
+	}
 
-	fmt.Println("OUTPUT ", output)
-	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
-	p.Body.Execute(res, &output)
+	var tmp = template.Must(template.New("results.gohtml").Funcs(funcMap).ParseFiles("htdocs/results.gohtml"))
+	err := tmp.Execute(res, &output)
+
+	fmt.Println("ERROR ", err)
+}
+
+func mod(i, j int) bool {
+	return i%j == 0
+}
+
+func equal(i, j int) bool {
+	return i == j
 }
 
 func loginHandler(res http.ResponseWriter, req *http.Request){

@@ -66,7 +66,7 @@
 
             
             <link rel="stylesheet" href="https://assets.foodora.com/15f52b8/css/dist/sg-default.css?15f52b8" />
-            <link rel="stylesheet" href="css/vendor.css" />
+            <link rel="stylesheet" href="/css/vendor.css" />
                     
                 <script src="https://assets.foodora.com/15f52b8/js/lib/load-fid-polyfill.js?15f52b8"></script>
 
@@ -659,13 +659,44 @@ View
 <main class="restaurants-container">
 
     <section class="vendor-lane-section">
-        <h3 class="title-flat">Here is your meal plan!</h3>
+        <h3 class="title-flat">Here is your meal plan for the week!</h3>
         <div style="clear:both;">
-        <ul class="dish-list" style="display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(350px, 1fr));">
             {{range $i, $a := .}}
 
-                <li style="box-shadow: 0 2px 28px 0 rgb(0 0 0 / 12%); padding: 10px; margin: 15px;" class="dish-card" data-testid="menu-product">
+                {{if equal $i 0}}
+                    <div><h3>Mornings!</h3></div>
+                {{end}}
+                {{if equal $i 1}}
+                    <div><h3>Afternoons!</h3></div>
+                {{end}}
+                {{if equal $i 2}}
+                    <div><h3>Nighttime!</h3></div>
+                {{end}}
+        <ul class="dish-list" style="display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(350px, 1fr));">
+                    {{range $index, $item := .}}
+                <li style="width: 390px; box-shadow: 0 2px 28px 0 rgb(0 0 0 / 12%); padding: 10px; margin: 15px;" class="dish-card" data-testid="menu-product">
+                    {{if equal $index 0}}
+                        <div><h3>Monday</h3></div>
+                    {{end}}
+                    {{if equal $index 1}}
+                        <div><h3>Tuesday</h3></div>
+                    {{end}}
+                    {{if equal $index 2}}
+                        <div><h3>Wednesday</h3></div>
+                    {{end}}
+                    {{if equal $index 3}}
+                        <div><h3>Thursday</h3></div>
+                    {{end}}
+                    {{if equal $index 4}}
+                        <div><h3>Friday</h3></div>
+                    {{end}}
+                    {{if equal $index 5}}
+                        <div><h3>Saturday</h3></div>
+                    {{end}}
+                    {{if equal $index 6}}
+                        <div><h3>Sunday</h3></div>
+                    {{end}}
                     <button data-testid="menu-product-button-overlay-id" class="product-button-overlay">
                     </button>
                     <div class="item-react-root">
@@ -677,7 +708,7 @@ View
                                 <p data-testid="menu-product-description" class="dish-description e-description ingredients">
                                     {{.ItemDesc}}</p>
                             </div>
-                            <img style="float: right; height: 100px; margin-top: -100px;" src="https://images.deliveryhero.io/image/fd-sg/Products/3032125.jpg?width=200" />
+                            <img style="float: right; height: 100px; margin-top: -50px;" src="https://images.deliveryhero.io/image/fd-sg/Products/3032125.jpg?width=200" />
                         </div>
                         <section class="action-bar">
                             <div class="action-bar-content">
@@ -694,10 +725,11 @@ View
                         </section>
                     </div>
                 </li>
+                {{end}}
 
-            {{end}}
 
         </ul>
+            {{end}}
         </div>
     </section>
 

@@ -22,6 +22,7 @@ type Items struct { // map this type to the record in the Items table
 	ItemDesc  string  `json:"itemdesc"`
 	ItemImg   string  `json:"itemimg"`
 	ItemCategory string `json:"itemcategory"`
+	ItemTiming	int	`json:"itemtiming""`
 	ShopId    int     `json:"shopid"`
 }
 
@@ -32,6 +33,7 @@ type CombinedItem struct {
 	ItemDesc  string  `json:"itemdesc"`
 	ItemImg   string  `json:"itemimg"`
 	ItemCategory string `json:"itemcategory"`
+	ItemTiming	int	`json:"itemtiming""`
 	ShopId    int     `json:"shopid"`
 	ShopName    string `json:"shopname"`
 	ShopAddress string `json:"shopaddress"`

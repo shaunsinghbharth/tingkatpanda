@@ -2,11 +2,11 @@ package httpd
 
 import (
 	"fmt"
-	"github.com/patrickmn/go-cache"
 	"html/template"
 	"net/http"
 	"sync"
 	"time"
+	"tingkatpanda/cachinator"
 	"tingkatpanda/sessionManager"
 )
 
@@ -21,11 +21,11 @@ type empty struct{
 
 var manager *sessionManager.SessionManager
 var srv *http.Server
-var c *cache.Cache
+var c *cachinator.Cache
 
 func Start(wg sync.WaitGroup){
 	fmt.Println("Generating cache")
-	c = cache.New(5*time.Minute, 10*time.Minute)
+	c = cachinator.New(5*time.Minute, 10*time.Minute)
 
 	fmt.Println("Starting HTTP Server")
 	srv = &http.Server{Addr: ":5221"}
