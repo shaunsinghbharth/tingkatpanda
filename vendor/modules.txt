@@ -1,0 +1,37 @@
+# github.com/go-sql-driver/mysql v1.6.0
+## explicit
+github.com/go-sql-driver/mysql
+# github.com/gorilla/mux v1.8.0
+## explicit
+github.com/gorilla/mux
+# github.com/patrickmn/go-cache v2.1.0+incompatible
+## explicit
+# github.com/satori/go.uuid v1.2.0
+## explicit
+github.com/satori/go.uuid
+# gonum.org/v1/gonum v0.9.1
+## explicit
+gonum.org/v1/gonum/blas
+gonum.org/v1/gonum/blas/blas64
+gonum.org/v1/gonum/blas/cblas128
+gonum.org/v1/gonum/blas/gonum
+gonum.org/v1/gonum/floats
+gonum.org/v1/gonum/floats/scalar
+gonum.org/v1/gonum/graph
+gonum.org/v1/gonum/graph/internal/ordered
+gonum.org/v1/gonum/graph/internal/set
+gonum.org/v1/gonum/graph/iterator
+gonum.org/v1/gonum/graph/set/uid
+gonum.org/v1/gonum/graph/simple
+gonum.org/v1/gonum/internal/asm/c128
+gonum.org/v1/gonum/internal/asm/c64
+gonum.org/v1/gonum/internal/asm/f32
+gonum.org/v1/gonum/internal/asm/f64
+gonum.org/v1/gonum/internal/cmplx64
+gonum.org/v1/gonum/internal/math32
+gonum.org/v1/gonum/lapack
+gonum.org/v1/gonum/lapack/gonum
+gonum.org/v1/gonum/lapack/lapack64
+gonum.org/v1/gonum/mat
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit
