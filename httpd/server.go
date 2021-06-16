@@ -28,7 +28,7 @@ func Start(wg sync.WaitGroup){
 	c = cachinator.New(5*time.Minute, 10*time.Minute)
 
 	fmt.Println("Starting HTTP Server")
-	srv = &http.Server{Addr: ":5221"}
+	srv = &http.Server{Addr: ":80"}
 
 	fmt.Println("Initialising Session Manager")
 	manager = &sessionManager.SessionManager{}
