@@ -82,6 +82,7 @@ func Populate(key string) *enginator.EnginatorTable{
 }
 
 func GetCoordinates(postcode string) (float64, float64)  {
+	fmt.Println("COORDSPOSTCODE", postcode)
 	///commonapi/search?searchVal={SearchText}&returnGeom={Y/N}&getAddrDetails={Y/N}&pageNum={PageNumber}
 	client := &http.Client{}
 
@@ -224,6 +225,7 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 
 	user := req.URL.Query().Get("user")
 	postcode := req.URL.Query().Get("postcode")
+	fmt.Println("POSTCODE ", postcode)
 	price, _ := strconv.ParseFloat(req.URL.Query().Get("price"), 64)
 	category := req.URL.Query().Get("category")
 	lat, long := GetCoordinates(postcode)
@@ -386,6 +388,8 @@ func profileEditor(res http.ResponseWriter, req *http.Request){
 func Destroy(res http.ResponseWriter, req *http.Request){
 	token := manager.DestroySession(req)
 	http.SetCookie(res, token)
+
+	http.Redirect(res,req,"/",http.StatusTemporaryRedirect)
 }
 
 func DELETEALLSESSIONS(res http.ResponseWriter, req *http.Request) {
