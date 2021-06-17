@@ -14,8 +14,8 @@
           <form method="POST" name="{{ .ShopID}}" enctype="multipart/form-data">
         <tr>
           <th>
-            <input type="text" name="SHOP" value="SHOPEDIT">
-            <input type="number" name="ShopID" value="{{ .ShopID}}">
+            <input style="display: none;" type="text" name="SHOP" value="SHOPEDIT">
+            <input style="display: none;" type="number" name="ShopID" value="{{ .ShopID}}">
             <input type="text" name="ShopName" value="{{ .ShopName}}"></th>
           <th><input type="text" name="ShopAddress" value="{{ .ShopAddress}}"></th>
           <th><input type="text" name="ShopRating" value="{{ .ShopRating}}"></th>
@@ -24,17 +24,18 @@
         </tr>
           </form>
         {{end}}
-            <form method="post">
-              <tr>
-                <input hidden type="text" name="SHOP" value="SHOPADD">
-                <input hidden type="number" name="ShopID" value="">
-                <th><input type="text" name="ShopName" value=""></th>
-                <th><input type="text" name="ShopName" value=""></th>
-                <th><input type="text" name="ShopName" value=""></th>
-                <th><input type="text" name="ShopName" value=""></th>
-                <th><button type="submit">Add</button></th>
-              </tr>
-            </form>
+        <form method="POST" name="create" enctype="multipart/form-data">
+          <tr>
+            <th>
+              <input type="text" name="SHOP" value="SHOPCREATE">
+              <input type="number" name="ShopID" value="">
+              <input type="text" name="ShopName" value=""></th>
+            <th><input type="text" name="ShopAddress" value=""></th>
+            <th><input type="text" name="ShopRating" value=""></th>
+            <th><input type="text" name="ShopPostCode" value=""></th>
+            <th><button type="submit" value="CREATE" name="deleteFlag">Create</button> </th>
+          </tr>
+        </form>
       </table>
     </div>
   </div>

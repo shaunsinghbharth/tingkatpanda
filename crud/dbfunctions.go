@@ -148,6 +148,23 @@ func EditShopRecords(db *sql.DB, shopID string, shopName string, shopAddress str
 	return nil
 }
 
+func CreateShopRecords(db *sql.DB, shopID string, shopName string, shopAddress string, shopRating string, shopStart string, shopEnd string, shopPostCode string) []map[string]interface{} {
+	//func EditShopRecords(db *sql.DB, ID int, SN string, SA string, SR string, SP string) []Shops {
+
+	fmt.Println("EDITSHOPSDB")
+	_ , err := db.Exec("INSERT INTO GOLIVEDB.Shops (ShopName, ShopAddress, ShopRating, ShopPostalCode) VALUES (?,?,?,?)", shopName, shopAddress, shopRating, shopPostCode)
+
+	if err != nil {
+		panic(err.Error())
+	} else {
+		//results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", shopID)
+	}
+
+	//returnMaps := goutils.SQLtoMap(results)
+
+	return nil
+}
+
 func EditItemRecords(db *sql.DB, ItemID string, ItemName string, ItemCategory, ItemPrice string, ItemDescription string, ItemImage string, ItemTiming string, ShopID string) []map[string]interface{} {
 
 	fmt.Println("VARS ", ItemID, ItemCategory, ItemPrice, ItemTiming, ItemName, ShopID)
@@ -157,6 +174,28 @@ func EditItemRecords(db *sql.DB, ItemID string, ItemName string, ItemCategory, I
 
 	//tx, err := db.Begin()
 	res, err := db.Exec("UPDATE GOLIVEDB.Items SET ItemName=?, ItemCategory=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ItemTiming=? WHERE ItemId=?", ItemName, ItemCategory, ItemPrice, ItemDescription, ItemImage, itemTimingint, itemIDint)
+	//tx.Commit()
+
+	rows, err := res.RowsAffected()
+	fmt.Println("Rows Affected: ", rows)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		//results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ItemID)
+	}
+
+	return nil
+}
+
+func CreateItemRecords(db *sql.DB, ItemID string, ItemName string, ItemCategory, ItemPrice string, ItemDescription string, ItemImage string, ItemTiming string, ShopID string) []map[string]interface{} {
+
+	fmt.Println("VARS ", ItemID, ItemCategory, ItemPrice, ItemTiming, ItemName, ShopID)
+	//itemIDint, _ := strconv.Atoi(ItemID)
+	shopIDint, _ := strconv.Atoi(ShopID)
+	itemTimingint, _ := strconv.Atoi(ItemTiming)
+
+	//tx, err := db.Begin()
+	res, err := db.Exec("INSERT INTO GOLIVEDB.Items (ShopId, ItemName, ItemCategory, ItemPrice, ItemDesc, ItemImg, ItemTiming) VALUES (?, ?, ?, ?, ?, ?, ?)", shopIDint, ItemName, ItemCategory, ItemPrice, ItemDescription, ItemImage, itemTimingint)
 	//tx.Commit()
 
 	rows, err := res.RowsAffected()

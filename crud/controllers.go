@@ -128,6 +128,24 @@ func EditShop(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(shop)
 }
 
+//Create Shop
+func CreateShop(w http.ResponseWriter, r *http.Request) {
+	shopID := r.URL.Query().Get("shopID")
+	shopName := r.URL.Query().Get("shopName")
+	shopAddress := r.URL.Query().Get("shopAddress")
+	shopRating := r.URL.Query().Get("shopRating")
+	shopStart := r.URL.Query().Get("shopstart")
+	shopEnd := r.URL.Query().Get("shopend")
+	shopPostCode := r.URL.Query().Get("shopPostCode")
+
+	var shop []map[string]interface{}
+	shop = CreateShopRecords(&db, shopID, shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(shop)
+}
+
 //Edit Item
 func EditItem(w http.ResponseWriter, r *http.Request) {
 
@@ -148,6 +166,27 @@ func EditItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
+}
+
+
+//Edit Item
+func CreateItem(w http.ResponseWriter, r *http.Request) {
+
+	itemID := r.URL.Query().Get("itemID")
+	itemName := r.URL.Query().Get("itemName")
+	itemPrice := r.URL.Query().Get("itemPrice")
+	itemDesc := r.URL.Query().Get("itemDesc")
+	itemImg := r.URL.Query().Get("itemImg")
+	itemCategory := r.URL.Query().Get("itemCategory")
+	shopID := r.URL.Query().Get("shopID")
+	itemTiming := r.URL.Query().Get("itemTiming")
+
+	fmt.Println("ITEMID Q ", itemID)
+
+	CreateItemRecords(&db, itemID, itemName, itemCategory, itemPrice, itemDesc, itemImg,itemTiming, shopID)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 }
 
 //Delete User

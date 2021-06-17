@@ -44,18 +44,34 @@
           </tr>
         </form>
           {{end}}
-          <form method="post" name="new" enctype="multipart/form-data">
-            <tr>
-              <input hidden type="text" name="SHOP" value="SHOPADD">
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><input type="text" name="ShopName" value=""></th>
-              <th><button type="submit">Add</button></th>
-            </tr>
-          </form>
+        <form method="POST" name="create" enctype="multipart/form-data">
+          <tr>
+
+            <th>
+              <input style="display: none;" type="text" name="ITEM" value="ITEMEDIT">
+              <input type="number" name="ItemID" value="">
+              <input style="display: none;" type="text" name="ShopID" value="1">
+              <input type="text" name="ItemName" value=""></th>
+            <th><select name="ItemPrice" id="price">
+                <option value="1" selected>$</option>
+                <option value="2" >$$</option>
+                <option value="3" >$$$</option>
+              </select></th>
+            <th><input type="text" name="ItemDesc" value=""></th>
+            <th>
+              Upload new file:
+              <input style="width: 200px;" type="file" name="fileUpload" /></th>
+            <th>Default Shop</th>
+            <th><input type="text" name="ItemCategory" value=""></th>
+            <th><select name="ItemTiming" id="plan">
+                <option value="0" selected>Breakfast</option>
+                <option value="1" >Lunch</option>
+                <option value="2" >Dinner</option>
+              </select>
+            </th>
+            <th><button type="submit" value="CREATE" name="deleteFlag">Create</button> </th>
+          </tr>
+        </form>
       </table>
     </div>
   </div>

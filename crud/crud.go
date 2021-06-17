@@ -40,11 +40,13 @@ func initaliseHandlers(router *mux.Router) {
 	router.HandleFunc("/getspecificshops", GetShopByShopID).Methods("GET")
 	router.HandleFunc("/editshops", EditShop).Methods("GET")
 	router.HandleFunc("/deleteshops", DeleteShop).Methods("GET")
+	router.HandleFunc("/createshops", CreateShop).Methods("GET")
 
 	router.HandleFunc("/getitems", GetAllItem).Methods("GET")
 	router.HandleFunc("/getspecificitems", GetItemByItemID).Methods("GET")
 	router.HandleFunc("/edititems", EditItem).Methods("GET")
 	router.HandleFunc("/deleteitems", DeleteItem).Methods("GET")
+	router.HandleFunc("/createitems", CreateItem).Methods("GET")
 }
 
 func Connect() sql.DB {

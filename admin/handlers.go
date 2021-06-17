@@ -237,6 +237,9 @@ func ServeItems(res http.ResponseWriter, req *http.Request){
 	if deleteFlag == "DELETE"{
 		fmt.Println("DELETING ITEM")
 		fetcher.DeleteItem("KEYVALUE", itemID)
+	}else if deleteFlag == "CREATE"{
+		fmt.Println("CREATING SHOP")
+		fetcher.CreateItem("KEYVALUE", flag, itemID, itemName, itemPrice, itemTiming, itemDescription, itemImage, itemCategory, shopID)
 	} else if flag == "ITEMEDIT"{
 		fmt.Println("EDITING ITEM ", itemID)
 		//(key string, flag string, itemID string, itemName string, itemPrice string, itemTiming string, itemDesc string, itemImg string, itemCategory string, shopID string)
@@ -292,6 +295,9 @@ func ServeShops(res http.ResponseWriter, req *http.Request){
 	if deleteFlag == "DELETE"{
 		fmt.Println("DELETING SHOP")
 		fetcher.DeleteShop("KEYVALUE", shopID)
+	}else if deleteFlag == "CREATE"{
+		fmt.Println("CREATING SHOP")
+		fetcher.CreateShop("KEYVALUE", flag, shopID, shopName, shopAddress, shopRating, shopPostCode)
 	} else if flag == "SHOPEDIT"{
 		fmt.Println("EDITING SHOP ", shopID)
 		fetcher.EditShop("KEYVALUE", flag, shopID, shopName, shopAddress, shopRating, shopPostCode)
