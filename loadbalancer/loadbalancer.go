@@ -14,7 +14,8 @@ var severCount = 0
 
 // These constant is used to define server
 const (
-	SERVER1 = "http://localhost:8081"
+	SERVER1 = "http://localhost:18081"
+	SERVER2 = "http://localhost:18088"
 	ADMIN = "http://localhost:8085"
 )
 

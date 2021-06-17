@@ -29,7 +29,7 @@ func Start(wg sync.WaitGroup, port string){
 
 	fmt.Println("Creating MUX")
 	mux := http.NewServeMux()
-	fmt.Println("Starting HTTP Server")
+	fmt.Println("Starting HTTP Server at port:", port)
 	srv = &http.Server{Addr: ":" + port,
 	Handler: mux}
 

@@ -66,16 +66,34 @@
     <script type="application/javascript">
         $( document ).ready(function() {
             console.log( "ready!" );
+
             let searchParams = new URLSearchParams(window.location.search)
             let param = searchParams.get('postcode')
             $("#postcode").val(param)
 
 
             $("#selector li").click(function(){
-                alert("CLICK")
+                //alert("CLICK")
                 $("#cuisine-type").val($(this).attr("value"));
             });
         });
+
+        function removeDuplicateOptions(s, comparitor) {
+            if(s.tagName.toUpperCase() !== 'SELECT') { return false; }
+            var c, i, o=s.options, sorter={};
+            if(!comparitor || typeof comparitor !== 'function') {
+                comparitor = function(o) { return o.value; };//by default we comare option values.
+            }
+            for(i=0; i<o.length; i++) {
+                c = comparitor(o[i]);
+                if(sorter[c]) {
+                    s.removeChild(o[i]);
+                    i--;
+                }
+                else { sorter[c] = true; }
+            }
+            return true;
+        }
     </script>
 </head>
 <body class="country-sg home">

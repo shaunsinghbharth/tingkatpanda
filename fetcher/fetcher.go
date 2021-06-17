@@ -169,8 +169,6 @@ func GetEditShops(key string) []models.ShopsEdit{
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-
-	fmt.Println(string(bodyBytes))
 	var responseObject []models.ShopsEdit
 	json.Unmarshal(bodyBytes, &responseObject)
 

@@ -35,7 +35,7 @@ func Start(wg sync.WaitGroup, port string){
 
 	fmt.Println("Initialising Session Manager")
 	manager = &sessionManager.SessionManager{}
-	manager.Init("tingkatpanda")
+	manager.Init("tingkatpandaadmin")
 
 	fs :=http.FileServer(http.Dir("htdocs/css/"))
 	mux.Handle("/css/", http.StripPrefix("/css/", fs))
@@ -46,7 +46,10 @@ func Start(wg sync.WaitGroup, port string){
 
 
 	mux.HandleFunc("/", ServeHTTP)
-	mux.HandleFunc("/admin/functions/", ServeFunctions)
+
+	mux.HandleFunc("/admin/login/", Login)
+	mux.HandleFunc("/admin/authenticate", Authenticate)
+	mux.HandleFunc("/admin/", ServeFunctions)
 	mux.HandleFunc("/admin/functions/shops/", ServeShops)
 	mux.HandleFunc("/admin/functions/items/", ServeItems)
 	mux.HandleFunc("/admin/functions/users/", ServeUsers)

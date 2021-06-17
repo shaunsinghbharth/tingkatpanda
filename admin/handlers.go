@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -52,13 +53,6 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 }
 
 func ServeFunctions(res http.ResponseWriter, req *http.Request){
-	var mutex = &sync.Mutex{}
-
-	mutex.Lock()
-	if manager.ValidSession(req) == false{
-		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
-	}
-	mutex.Unlock()
 
 	var p *Page
 
@@ -198,27 +192,30 @@ func ServeItems(res http.ResponseWriter, req *http.Request){
 	case "POST":
 		req.ParseMultipartForm(10 << 20)
 
-			file, handler, err := req.FormFile("fileUpload")
-			if err != nil {
-				fmt.Println("Error Retrieving the File")
-				fmt.Println(err)
-				itemImage = "/images/placeholder.jpg"
-			}
-			defer file.Close()
+		file, handler, err := req.FormFile("fileUpload")
+
+			log.Println("no file")
+			itemImage = "/images/placeholder.jpg"
+
+			log.Println(err)
 			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 			fmt.Printf("File Size: %+v\n", handler.Size)
 			fmt.Printf("MIME Header: %+v\n", handler.Header)
 
 			// Create a temporary file within our temp-images directory that follows
 			// a particular naming pattern
+			defer file.Close()
 			tempFile, err := os.Create("htdocs/images/" + handler.Filename)
 			if err != nil {
 				fmt.Println(err)
 			}
+
 			defer tempFile.Close()
 
 			_, err = io.Copy(tempFile, file)
-			itemImage = "/images/"+ handler.Filename
+			itemImage = "/images/" + handler.Filename
+
+		defer file.Close()
 
 		req.ParseForm()
 		flag = req.FormValue("ITEM")
@@ -248,14 +245,6 @@ func ServeItems(res http.ResponseWriter, req *http.Request){
 
 	req.ParseForm()
 
-	var mutex = &sync.Mutex{}
-
-	mutex.Lock()
-	if manager.ValidSession(req) == false{
-		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
-	}
-	mutex.Unlock()
-
 	RenderHeader(res,req)
 
 	items := fetcher.GetAllCombinedItem("KEYVALUE")
@@ -263,10 +252,79 @@ func ServeItems(res http.ResponseWriter, req *http.Request){
 		"mod": mod,
 		"equal": equal,
 		"equalstring": equalstring,
+		"shopIDs" : getShopIDs,
+		"shopNames" : getShopNames,
 	}
 
 	var tmp = template.Must(template.New("adminitems.gohtml").Funcs(funcMap).ParseFiles("htdocs/adminitems.gohtml"))
 	tmp.Execute(res, &items)
+}
+
+func getShopIDs() []string{
+	shops := fetcher.GetEditShops("KEYVALUE")
+	var retVal []string
+	for _,v := range shops{
+		retVal = append(retVal, v.ShopID)
+	}
+
+	return retVal
+}
+
+func getShopNames() []models.ShopType{
+	shops := fetcher.GetEditShops("KEYVALUE")
+	var retVal []models.ShopType
+	for _,v := range shops{
+		var temp models.ShopType
+		temp.ShopName = v.ShopName
+		temp.ShopID = v.ShopID
+		retVal = append(retVal, temp)
+	}
+
+	return retVal
+}
+
+func Authenticate(res http.ResponseWriter, req *http.Request){
+	fmt.Println("Authentication Redirector")
+	fmt.Println(req.Cookie("tingkatpanda"))
+
+	if err := req.ParseForm(); err != nil {
+		fmt.Fprintf(res, "ParseForm() err: %v", err)
+		return
+	}
+
+	switch req.Method {
+	case "POST":
+		username := req.FormValue("user")
+		fmt.Println("USER ", username)
+		password := req.FormValue("password")
+
+		token := manager.CreateSession(username, password)
+
+		fmt.Println(token)
+		http.SetCookie(res, token)
+
+		http.Redirect(res,req,"/admin/functions/",http.StatusTemporaryRedirect)
+	}
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
+	if manager.ValidSession(req) == false{
+		http.Redirect(res,req,"/admin/login/",http.StatusTemporaryRedirect)
+	}
+	mutex.Unlock()
+
+	var p *Page
+
+	p = &Page{
+		Title: "",
+		Body:  nil,
+	}
+
+	RenderHeader(res,req)
+
+	p, _ = loadPage("admin.html")
+
+	p.Body.Execute(res, nil)
 }
 
 func ServeShops(res http.ResponseWriter, req *http.Request){
@@ -303,14 +361,6 @@ func ServeShops(res http.ResponseWriter, req *http.Request){
 		fetcher.EditShop("KEYVALUE", flag, shopID, shopName, shopAddress, shopRating, shopPostCode)
 	}
 
-	var mutex = &sync.Mutex{}
-
-	mutex.Lock()
-	if manager.ValidSession(req) == false{
-		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
-	}
-	mutex.Unlock()
-
 	var p *Page
 
 	p, _ = loadPage("adminshops.gohtml")
@@ -327,7 +377,7 @@ func ServeUsers(res http.ResponseWriter, req *http.Request){
 
 	mutex.Lock()
 	if manager.ValidSession(req) == false{
-		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+		http.Redirect(res,req,"/admin/",http.StatusTemporaryRedirect)
 	}
 	mutex.Unlock()
 
@@ -349,9 +399,11 @@ func Login(res http.ResponseWriter, req *http.Request){
 		Body:  nil,
 	}
 
+	http.Redirect(res, req,"/admin/functions/", http.StatusTemporaryRedirect)
+
 	p, _ = loadPage("login.html")
 
-	RenderHeader(res,req)
+	//RenderHeader(res,req)
 	p.Body.Funcs(template.FuncMap{"mod": func(i, j int) bool { return i%j == 0 }})
 	p.Body.Execute(res, nil)
 }

@@ -2,6 +2,7 @@ package enginator
 
 import (
 	"errors"
+	"fmt"
 	_ "fmt"
 	"log"
 	"sort"
@@ -227,6 +228,7 @@ func (table *EnginatorTable) Recommend(key interface{}) (DistancePairList, error
 			Key: key,
 			Distance: score,
 		}
+		fmt.Println("Enginator recommends ", key, score)
 		i++
 	}
 	sort.Sort(recsList)

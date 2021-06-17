@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"tingkatpanda/cachinator"
 	"tingkatpanda/enginator"
 	"tingkatpanda/fetcher"
 	"tingkatpanda/models"
@@ -55,6 +54,8 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 }
 
 func ShowSelect(res http.ResponseWriter, req *http.Request){
+	postcode := req.URL.Query().Get("postcode")
+
 	var mutex = &sync.Mutex{}
 
 	mutex.Lock()
@@ -74,7 +75,7 @@ func ShowSelect(res http.ResponseWriter, req *http.Request){
 
 	p, _ = loadPage("select.html")
 
-	p.Body.Execute(res, nil)
+	p.Body.Execute(res, postcode)
 }
 
 func Populate(key string) *enginator.EnginatorTable{
@@ -144,6 +145,7 @@ func GetCoordinates(postcode string) (float64, float64)  {
 
 	fmt.Println("RESULT" , singleResult)
 	//return 0.0, 0.0
+	fmt.Println("SINGLERESULT ", singleResult)
 	LAT, _ := strconv.ParseFloat(singleResult["LATITUDE"].(string), 64)
 	LONG, _ := strconv.ParseFloat(singleResult["LONGITUDE"].(string), 64)
 	return LAT, LONG
@@ -274,7 +276,10 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 		timings = req.Form["timing"]
 		category = req.FormValue("category")
 		price, _ = strconv.ParseFloat(req.FormValue("price"),64)
+
+		fmt.Println("POSTTIMINGS ", timings)
 	}
+	fmt.Println("POSTPOSTCODE: ", postcode)
 	lat, long := GetCoordinates(postcode)
 
 	table := Populate("KEYVALUE")
@@ -286,28 +291,43 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 		fmt.Println("Recommending", rec.Key, "with score:", rec.Distance, "at index:", i)
 
 		var tempItem []models.CombinedItem
-		cacheOutput, found := c.Get(strconv.Itoa(rec.Key.(int)))
-		if found {
-			tempItem = cacheOutput.([]models.CombinedItem)
-		} else {
+		//cacheOutput, found := c.Get(strconv.Itoa(rec.Key.(int)))
+		//if found {
+		//	tempItem = cacheOutput.([]models.CombinedItem)
+		//} else {
 			tempItem = fetcher.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
+			fmt.Println("COMBINEDITEMS ", tempItem)
 			mutex.Lock()
-			c.Set(strconv.Itoa(rec.Key.(int)), output, cachinator.DefaultExpiration)
+			//c.Set(strconv.Itoa(rec.Key.(int)), output, cachinator.DefaultExpiration)
 			mutex.Unlock()
-		}
+		//}
 
+		fmt.Println("tempitempost ", tempItem[0])
 		shoplat, shoplong := GetCoordinates(tempItem[0].ShopPostCode)
 		itemPrice, _ := strconv.ParseFloat(tempItem[0].ItemPrice, 64)
 		itemCategory := tempItem[0].ItemCategory
 		dist := distance(lat,long,shoplat,shoplong, "K")
 		if dist < 5 && price == itemPrice && category == itemCategory{
-			for i,v := range timings {
-				v_int, _ := strconv.Atoi(v)
+			for _,v := range timings {
 				itemTiming, _ := strconv.Atoi(tempItem[0].ItemTiming)
-				if v_int ==  itemTiming{
-					output[i] = append(output[i], tempItem[0])
+				fmt.Println("TIMING ", itemTiming)
+				idx, _ := strconv.Atoi(v)
+				if v == "0" {
+					output[idx] = append(output[idx], tempItem[0])
+				}
+				if v == "1" {
+					output[idx] = append(output[idx], tempItem[0])
+				}
+				if v == "2" {
+					output[idx] = append(output[idx], tempItem[0])
 				}
 			}
+		}
+	}
+
+	for i,_ := range output{
+		if len(output[i]) > 7 {
+			output[i] = output[i][:7]
 		}
 	}
 

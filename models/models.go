@@ -76,3 +76,8 @@ type UserItems struct {
 	Rating   int `json:"rating"`
 	UserName string `json:"username"`
 }
+
+type ShopType struct{
+	ShopID string
+	ShopName string
+}

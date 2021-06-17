@@ -20,21 +20,24 @@
             <th>
               <input style="display: none;" type="text" name="ITEM" value="ITEMEDIT">
               <input style="display: none;" type="text" name="ItemID" value="{{ .ItemId}}">
-              <input type="text" name="ShopID" value="{{ .ShopId}}">
-              <input type="text" name="ItemName" value="{{ .ItemName}}"></th>
-            <th><select name="ItemPrice" id="price">
+              <input type="text" name="ItemName" value="{{ .ItemName}}" required></th>
+            <th><select name="ItemPrice" id="price" required>
                 <option value="1" {{if equalstring 1 .ItemPrice}}selected{{end}}>$</option>
                 <option value="2" {{if equalstring 2 .ItemPrice}}selected{{end}}>$$</option>
                 <option value="3" {{if equalstring 3 .ItemPrice}}selected{{end}}>$$$</option>
               </select></th>
-            <th><input type="text" name="ItemDesc" value="{{ .ItemDesc}}"></th>
+            <th><input type="text" name="ItemDesc" value="{{ .ItemDesc}}" required></th>
             <th>
               <img style="width: 100px;" src="{{ .ItemImg}}"><br>
               Upload new file:
-              <input style="width: 200px;" type="file" name="fileUpload" /></th>
-            <th>{{ .ShopName}}</th>
-            <th><input type="text" name="ItemCategory" value="{{ .ItemCategory}}"></th>
-            <th><select name="ItemTiming" id="plan">
+              <input style="width: 200px;" type="file" name="fileUpload" required/></th>
+              <th><select name="ShopID" class="shops" required>
+                      {{range shopNames}}
+                          <option value={{ .ShopID}}>{{ .ShopName}}</option>
+                      {{end}}</select>
+              </th>
+            <th><input type="text" name="ItemCategory" value="{{ .ItemCategory}}" required></th>
+            <th><select name="ItemTiming" id="plan" required>
                 <option value="0" {{if equalstring 0 .ItemTiming}}selected{{end}}>Breakfast</option>
                 <option value="1" {{if equalstring 1 .ItemTiming}}selected{{end}}>Lunch</option>
                 <option value="2" {{if equalstring 2 .ItemTiming}}selected{{end}}>Dinner</option>
@@ -49,21 +52,24 @@
 
             <th>
               <input style="display: none;" type="text" name="ITEM" value="ITEMEDIT">
-              <input type="number" name="ItemID" value="">
-              <input style="display: none;" type="text" name="ShopID" value="1">
-              <input type="text" name="ItemName" value=""></th>
-            <th><select name="ItemPrice" id="price">
+              <input style="display: none;" type="number" name="ItemID" value="">
+              <input type="text" name="ItemName" value="" required></th>
+            <th><select name="ItemPrice" id="price" required>
                 <option value="1" selected>$</option>
                 <option value="2" >$$</option>
                 <option value="3" >$$$</option>
               </select></th>
-            <th><input type="text" name="ItemDesc" value=""></th>
+            <th><input type="text" name="ItemDesc" value="" required></th>
             <th>
               Upload new file:
-              <input style="width: 200px;" type="file" name="fileUpload" /></th>
-            <th>Default Shop</th>
-            <th><input type="text" name="ItemCategory" value=""></th>
-            <th><select name="ItemTiming" id="plan">
+              <input style="width: 200px;" type="file" name="fileUpload" required/></th>
+              <th><select class="shops" required>
+                      {{range shopNames}}
+                          <option value={{ .ShopID}}>{{ .ShopName}}</option>
+                      {{end}}</select>
+              </th>
+            <th><input type="text" name="ItemCategory" value="" required></th>
+            <th><select name="ShopID" id="plan" required>
                 <option value="0" selected>Breakfast</option>
                 <option value="1" >Lunch</option>
                 <option value="2" >Dinner</option>
