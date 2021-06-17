@@ -31,7 +31,7 @@ func Start(wg sync.WaitGroup, port string){
 	mux := http.NewServeMux()
 	fmt.Println("Starting HTTP Server")
 	srv = &http.Server{Addr: ":" + port,
-	Handler: mux}
+		Handler: mux}
 
 	fmt.Println("Initialising Session Manager")
 	manager = &sessionManager.SessionManager{}
@@ -50,7 +50,6 @@ func Start(wg sync.WaitGroup, port string){
 	mux.HandleFunc("/admin/functions/shops/", ServeShops)
 	mux.HandleFunc("/admin/functions/items/", ServeItems)
 	mux.HandleFunc("/admin/functions/users/", ServeUsers)
-
 
 	mux.HandleFunc("/destroy/", Destroy)
 	err := srv.ListenAndServe()

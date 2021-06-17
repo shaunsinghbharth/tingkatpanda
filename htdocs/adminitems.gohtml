@@ -14,24 +14,39 @@
           <th>Actions</th>
         </tr>
         {{range .}}
-        <form method="post">
+        <form method="POST" name="{{ .ItemId}}" enctype="multipart/form-data">
           <tr>
-            <input hidden type="text" name="ITEM" value="ITEM">
-            <input hidden type="number" name="ItemID" value="{{ .ItemId}}">
-            <th><input type="text" name="ShopName" value="{{ .ItemName}}"></th>
-            <th><input type="number" name="ShopName" value="{{ .ItemPrice}}"></th>
-            <th><input type="text" name="ShopName" value="{{ .ItemDesc}}"></th>
-            <th><input type="text" name="ShopName" value="{{ .ItemImg}}"></th>
-            <th><input type="text" name="ShopName" value="{{ .ShopName}}"></th>
-            <th><input type="text" name="ShopName" value="{{ .ItemCategory}}"></th>
-            <th><input type="number" name="ShopName" value="{{ .ItemTiming}}"></th>
-            <th><button type="submit">Edit</button> | <a href="/admin/delete/"><button>Delete</button></a> </th>
+
+            <th>
+              <input style="display: none;" type="text" name="ITEM" value="ITEMEDIT">
+              <input style="display: none;" type="text" name="ItemID" value="{{ .ItemId}}">
+              <input type="text" name="ShopID" value="{{ .ShopId}}">
+              <input type="text" name="ItemName" value="{{ .ItemName}}"></th>
+            <th><select name="ItemPrice" id="price">
+                <option value="1" {{if equalstring 1 .ItemPrice}}selected{{end}}>$</option>
+                <option value="2" {{if equalstring 2 .ItemPrice}}selected{{end}}>$$</option>
+                <option value="3" {{if equalstring 3 .ItemPrice}}selected{{end}}>$$$</option>
+              </select></th>
+            <th><input type="text" name="ItemDesc" value="{{ .ItemDesc}}"></th>
+            <th>
+              <img style="width: 100px;" src="{{ .ItemImg}}"><br>
+              Upload new file:
+              <input style="width: 200px;" type="file" name="fileUpload" /></th>
+            <th>{{ .ShopName}}</th>
+            <th><input type="text" name="ItemCategory" value="{{ .ItemCategory}}"></th>
+            <th><select name="ItemTiming" id="plan">
+                <option value="0" {{if equalstring 0 .ItemTiming}}selected{{end}}>Breakfast</option>
+                <option value="1" {{if equalstring 1 .ItemTiming}}selected{{end}}>Lunch</option>
+                <option value="2" {{if equalstring 2 .ItemTiming}}selected{{end}}>Dinner</option>
+              </select>
+            </th>
+            <th><button type="submit">Edit</button> | <button type="submit" value="DELETE" name="deleteFlag">Delete</button> </th>
           </tr>
+        </form>
           {{end}}
-          <form method="post">
+          <form method="post" name="new" enctype="multipart/form-data">
             <tr>
               <input hidden type="text" name="SHOP" value="SHOPADD">
-              <input hidden type="number" name="ShopID" value="">
               <th><input type="text" name="ShopName" value=""></th>
               <th><input type="text" name="ShopName" value=""></th>
               <th><input type="text" name="ShopName" value=""></th>
@@ -40,6 +55,7 @@
               <th><input type="text" name="ShopName" value=""></th>
               <th><button type="submit">Add</button></th>
             </tr>
+          </form>
       </table>
     </div>
   </div>

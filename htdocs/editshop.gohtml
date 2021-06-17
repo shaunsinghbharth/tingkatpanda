@@ -1,0 +1,28 @@
+<section class="container" style="margin: auto; margin-top: 300px;">
+  <div style="width: 1000px; margin: auto; padding: 30px; box-shadow: 0 2px 28px 0 rgba(0,0,0,0.12);;">
+    <h3 style="margin-bottom: 30px;">Edit/Delete Shop</h3>
+          <form method="POST" name="{{ .ShopID}}" enctype="multipart/form-data">
+        <tr>
+          <th>
+            <input type="text" name="SHOP" value="SHOPEDIT">
+            <input type="number" name="ShopID" value="{{ .ShopID}}">
+            <input type="text" name="ShopName" value="{{ .ShopName}}"></th>
+          <th><input type="text" name="ShopAddress" value="{{ .ShopAddress}}"></th>
+          <th><input type="text" name="ShopRating" value="{{ .ShopRating}}"></th>
+          <th><input type="text" name="ShopPostCode" value="{{ .ShopPostCode}}"></th>
+          <th><button type="submit">Edit</button> | <button type="submit" value="DELETE" name="deleteFlag">Delete</button> </th>
+        </tr>
+            <form method="post">
+              <tr>
+                <input hidden type="text" name="SHOP" value="SHOPADD">
+                <input hidden type="number" name="ShopID" value="">
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><button type="submit">Add</button></th>
+  </div>
+</section>
+</body>
+
+</html>

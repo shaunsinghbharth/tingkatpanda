@@ -2,7 +2,6 @@ package goutils
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 func SQLtoMap(results *sql.Rows) []map[string]interface{} {
@@ -22,7 +21,7 @@ func SQLtoMap(results *sql.Rows) []map[string]interface{} {
 		results.Scan(pointers...)
 
 		for i, val := range values {
-			fmt.Printf("Adding key=%s val=%v\n", columns[i], val)
+			//fmt.Printf("Adding key=%s val=%v\n", columns[i], val)
 			switch value := val.(type) {
 			case string:
 				resultMap[columns[i]] = value

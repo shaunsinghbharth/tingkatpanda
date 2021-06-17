@@ -3,6 +3,7 @@ package crud
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"tingkatpanda/goutils"
 )
 
@@ -129,35 +130,44 @@ func EditUserRecords(db *sql.DB, AN string, AK string) []map[string]interface{} 
 	return returnMaps
 }
 
-//EditShopRecords(&db, shopID, shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode)
 func EditShopRecords(db *sql.DB, shopID string, shopName string, shopAddress string, shopRating string, shopStart string, shopEnd string, shopPostCode string) []map[string]interface{} {
 	//func EditShopRecords(db *sql.DB, ID int, SN string, SA string, SR string, SP string) []Shops {
-	results, err := db.Query("UPDATE Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopStart=?, ShopEnd = ?, ShopPostCode = ? WHERE ShopId=?", shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode, shopID)
+	IDint, _ := strconv.Atoi(shopID)
+
+	fmt.Println("EDITSHOPSDB")
+	_ , err := db.Exec("UPDATE GOLIVEDB.Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopPostalCode = ? WHERE ShopID=?", shopName, shopAddress, shopRating, shopPostCode, IDint)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", shopID)
+		//results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", shopID)
 	}
 
-	returnMaps := goutils.SQLtoMap(results)
+	//returnMaps := goutils.SQLtoMap(results)
 
-	return returnMaps
+	return nil
 }
 
-//EditItemRecords(&db, itemID, itemName, itemPrice, itemDesc, itemImg, shopID)
-func EditItemRecords(db *sql.DB, ItemID string, ItemName string, ItemPrice string, ItemDescription string, ItemImage string, ShopID string) []map[string]interface{} {
-	results, err := db.Query("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", ItemName, ItemPrice, ItemDescription, ItemImage, ShopID, ItemID)
+func EditItemRecords(db *sql.DB, ItemID string, ItemName string, ItemCategory, ItemPrice string, ItemDescription string, ItemImage string, ItemTiming string, ShopID string) []map[string]interface{} {
 
+	fmt.Println("VARS ", ItemID, ItemCategory, ItemPrice, ItemTiming, ItemName, ShopID)
+	itemIDint, _ := strconv.Atoi(ItemID)
+	//shopIDint, _ := strconv.Atoi(ShopID)
+	itemTimingint, _ := strconv.Atoi(ItemTiming)
+
+	//tx, err := db.Begin()
+	res, err := db.Exec("UPDATE GOLIVEDB.Items SET ItemName=?, ItemCategory=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ItemTiming=? WHERE ItemId=?", ItemName, ItemCategory, ItemPrice, ItemDescription, ItemImage, itemTimingint, itemIDint)
+	//tx.Commit()
+
+	rows, err := res.RowsAffected()
+	fmt.Println("Rows Affected: ", rows)
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ItemID)
+		//results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ItemID)
 	}
 
-	returnMaps := goutils.SQLtoMap(results)
-
-	return returnMaps
+	return nil
 }
 
 func DeleteUserRecords(db *sql.DB, AN string) string {
@@ -175,8 +185,10 @@ func DeleteUserRecords(db *sql.DB, AN string) string {
 	return "Delete Success"
 }
 
-func DeleteShopRecords(db *sql.DB, ID string) string {
-	results, err := db.Query("DELETE FROM Shops WHERE ShopID=?", ID)
+func DeleteShops(db *sql.DB, ID string) string {
+	IDint, _ := strconv.Atoi(ID)
+	fmt.Println("DELETESHOPSDB", IDint)
+	results, err := db.Exec("DELETE FROM Shops WHERE ShopId=?", IDint)
 
 	if err != nil {
 		return "Shop Does Not Exist"
@@ -191,16 +203,18 @@ func DeleteShopRecords(db *sql.DB, ID string) string {
 }
 
 func DeleteItemRecords(db *sql.DB, ID string) string {
-	results, err := db.Query("DELETE FROM Items WHERE ItemID=?", ID)
+	fmt.Println("DELETEITEMSUSER ", ID)
+	ID_int, _ := strconv.Atoi(ID)
+	//results, err := db.Query("DELETE FROM Items WHERE ItemID=?", ID_int)
+	results, err := db.Exec("DELETE FROM Items WHERE ItemID=?", ID_int)
 
 	if err != nil {
 		return "Item Does Not Exist"
 		//panic(err.Error())
 	}
 
-	if results != nil {
-		return "Error Deleting"
-	}
+	rows, err := results.RowsAffected()
+	fmt.Println("ROWS AFFECTED: ", rows)
 
 	return "Delete Success"
 }

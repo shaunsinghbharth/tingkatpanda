@@ -16,8 +16,6 @@ func GetFullItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 func GetFullItems(w http.ResponseWriter, r *http.Request) {
@@ -28,8 +26,6 @@ func GetFullItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetAllUser get all user data
@@ -41,8 +37,6 @@ func GetAllUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetAllShop get all shop data
@@ -54,8 +48,6 @@ func GetAllShop(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(shop)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetAllItem get all item data
@@ -67,8 +59,6 @@ func GetAllItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetUserByUserName returns user with specific UserName
@@ -81,8 +71,6 @@ func GetUserByUserName(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetShopByShopID returns shop with specific ShopID
@@ -95,8 +83,6 @@ func GetShopByShopID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(shop)
-
-	fmt.Println("SUCCESS")
 }
 
 //GetItemByItemID returns item with specific ItemID
@@ -109,8 +95,6 @@ func GetItemByItemID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 //Edit User
@@ -124,19 +108,17 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user)
-
-	fmt.Println("SUCCESS")
 }
 
 //Edit Shop
 func EditShop(w http.ResponseWriter, r *http.Request) {
-	shopID := r.URL.Query().Get("shopid")
-	shopName := r.URL.Query().Get("shopname")
-	shopAddress := r.URL.Query().Get("shopaddress")
-	shopRating := r.URL.Query().Get("shoprating")
+	shopID := r.URL.Query().Get("shopID")
+	shopName := r.URL.Query().Get("shopName")
+	shopAddress := r.URL.Query().Get("shopAddress")
+	shopRating := r.URL.Query().Get("shopRating")
 	shopStart := r.URL.Query().Get("shopstart")
 	shopEnd := r.URL.Query().Get("shopend")
-	shopPostCode := r.URL.Query().Get("shoppostcode")
+	shopPostCode := r.URL.Query().Get("shopPostCode")
 
 	var shop []map[string]interface{}
 	shop = EditShopRecords(&db, shopID, shopName, shopAddress, shopRating, shopStart, shopEnd, shopPostCode)
@@ -144,27 +126,28 @@ func EditShop(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(shop)
-
-	fmt.Println("SUCCESS")
 }
 
 //Edit Item
 func EditItem(w http.ResponseWriter, r *http.Request) {
-	itemID := r.URL.Query().Get("itemid")
-	itemName := r.URL.Query().Get("itemname")
-	itemPrice := r.URL.Query().Get("itemprice")
-	itemDesc := r.URL.Query().Get("itemdesc")
-	itemImg := r.URL.Query().Get("itemimg")
-	shopID := r.URL.Query().Get("shopid")
+
+	itemID := r.URL.Query().Get("itemID")
+	itemName := r.URL.Query().Get("itemName")
+	itemPrice := r.URL.Query().Get("itemPrice")
+	itemDesc := r.URL.Query().Get("itemDesc")
+	itemImg := r.URL.Query().Get("itemImg")
+	itemCategory := r.URL.Query().Get("itemCategory")
+	shopID := r.URL.Query().Get("shopID")
+	itemTiming := r.URL.Query().Get("itemTiming")
+
+	fmt.Println("ITEMID Q ", itemID)
 
 	var item []map[string]interface{}
-	item = EditItemRecords(&db, itemID, itemName, itemPrice, itemDesc, itemImg, shopID)
+	item = EditItemRecords(&db, itemID, itemName, itemCategory, itemPrice, itemDesc, itemImg,itemTiming, shopID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 //Delete User
@@ -180,15 +163,14 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(returnVal)
-
-	fmt.Println("DELETED")
 }
 
 //Delete Shop
 func DeleteShop(w http.ResponseWriter, r *http.Request) {
-	shopID := r.URL.Query().Get("shop")
+	shopID := r.URL.Query().Get("shopID")
 
-	successMessage := DeleteShopRecords(&db, shopID)
+	fmt.Println("DELETING SHOP")
+	successMessage := DeleteShops(&db, shopID)
 	returnVal := struct {
 		Message string `json:"message"`
 		Value   string `json:"value"`
@@ -197,13 +179,11 @@ func DeleteShop(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(returnVal)
-
-	fmt.Println("DELETED")
 }
 
 //Delete Item
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	itemID := r.URL.Query().Get("item")
+	itemID := r.URL.Query().Get("itemID")
 
 	successMessage := DeleteItemRecords(&db, itemID)
 	returnVal := struct {
@@ -214,8 +194,6 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(returnVal)
-
-	fmt.Println("DELETED")
 }
 
 func GetUserItems(w http.ResponseWriter, r *http.Request) {
@@ -227,8 +205,6 @@ func GetUserItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(item)
-
-	fmt.Println("SUCCESS")
 }
 
 // Middleware function, which will be called for each request

@@ -2,10 +2,15 @@ package admin
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"html/template"
+	"io"
 	"net/http"
+	"os"
+	"strconv"
 	"sync"
 	"tingkatpanda/fetcher"
+	"tingkatpanda/models"
 )
 
 func ServeHTTP(res http.ResponseWriter, req *http.Request){
@@ -64,7 +69,182 @@ func ServeFunctions(res http.ResponseWriter, req *http.Request){
 	p.Body.Execute(res, empty{})
 }
 
+func DeleteItems(res http.ResponseWriter, req *http.Request){
+	var itemID string
+	vars := mux.Vars(req)
+	itemID = vars["id"]
+	fmt.Println("ITEMS HANDLER")
+
+	fmt.Println("EDITING ITEM ", itemID)
+	//(key string, flag string, itemID string, itemName string, itemPrice string, itemTiming string, itemDesc string, itemImg string, itemCategory string, shopID string)
+	fetcher.DeleteItem("KEYVALUE", itemID)
+
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
+	if manager.ValidSession(req) == false{
+		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+	mutex.Unlock()
+	RenderHeader(res,req)
+
+	items := fetcher.GetAllCombinedItem("KEYVALUE")
+	var funcMap = template.FuncMap{
+		"mod": mod,
+		"equal": equal,
+		"equalstring": equalstring,
+	}
+
+	var tmp = template.Must(template.New("edititem.gohtml").Funcs(funcMap).ParseFiles("htdocs/edititem.gohtml"))
+	tmp.Execute(res, &items)
+}
+
+func EditItems(res http.ResponseWriter, req *http.Request){
+	var itemID string
+	var itemName string
+	var itemDescription string
+	var itemPrice string
+	var itemImage string
+	var shopID string
+	var itemCategory string
+	var itemTiming string
+
+	vars := mux.Vars(req)
+	itemID = vars["id"]
+
+	fmt.Println("ITEMS HANDLER")
+
+	switch req.Method {
+	case "POST":
+		req.ParseMultipartForm(10 << 20)
+
+		if req.FormValue("fileUpload") != "" {
+			file, handler, err := req.FormFile("fileUpload")
+			if err != nil {
+				fmt.Println("Error Retrieving the File")
+				fmt.Println(err)
+				return
+			}
+			defer file.Close()
+			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+			fmt.Printf("File Size: %+v\n", handler.Size)
+			fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+			// Create a temporary file within our temp-images directory that follows
+			// a particular naming pattern
+			tempFile, err := os.Create("htdocs/images/" + handler.Filename)
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer tempFile.Close()
+
+			_, err = io.Copy(tempFile, file)
+			itemImage = "/images/"+ handler.Filename
+		}else{
+			itemImage = "/images/temp.png"
+		}
+
+		req.ParseForm()
+		shopID = req.FormValue("ShopID")
+		//itemID = req.FormValue("ItemID")
+		itemName = req.FormValue("ItemName")
+		itemDescription = req.FormValue("ItemDesc")
+		itemPrice = req.FormValue("ItemPrice")
+		itemCategory = req.FormValue("ItemCategory")
+		itemTiming = req.FormValue("ItemTiming")
+
+		fmt.Println("EDITING ITEM ", itemID)
+		//(key string, flag string, itemID string, itemName string, itemPrice string, itemTiming string, itemDesc string, itemImg string, itemCategory string, shopID string)
+		fetcher.EditItem("KEYVALUE", "flag", itemID, itemName, itemPrice, itemTiming, itemDescription, itemImage, itemCategory, shopID)
+	}
+
+	req.ParseForm()
+
+	var mutex = &sync.Mutex{}
+
+	mutex.Lock()
+	if manager.ValidSession(req) == false{
+		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+	}
+	mutex.Unlock()
+	RenderHeader(res,req)
+
+	items := fetcher.GetAllCombinedItem("KEYVALUE")
+	var funcMap = template.FuncMap{
+		"mod": mod,
+		"equal": equal,
+		"equalstring": equalstring,
+	}
+
+	var tmp = template.Must(template.New("edititem.gohtml").Funcs(funcMap).ParseFiles("htdocs/edititem.gohtml"))
+	tmp.Execute(res, &items)
+}
+
 func ServeItems(res http.ResponseWriter, req *http.Request){
+	var flag string
+	var itemID string
+	var itemName string
+	var itemDescription string
+	var itemPrice string
+	var itemImage string
+	var shopID string
+	var itemCategory string
+	var itemTiming string
+	var deleteFlag string
+
+	fmt.Println("ITEMS HANDLER")
+
+	switch req.Method {
+	case "POST":
+		req.ParseMultipartForm(10 << 20)
+
+			file, handler, err := req.FormFile("fileUpload")
+			if err != nil {
+				fmt.Println("Error Retrieving the File")
+				fmt.Println(err)
+				itemImage = "/images/placeholder.jpg"
+			}
+			defer file.Close()
+			fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+			fmt.Printf("File Size: %+v\n", handler.Size)
+			fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+			// Create a temporary file within our temp-images directory that follows
+			// a particular naming pattern
+			tempFile, err := os.Create("htdocs/images/" + handler.Filename)
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer tempFile.Close()
+
+			_, err = io.Copy(tempFile, file)
+			itemImage = "/images/"+ handler.Filename
+
+		req.ParseForm()
+		flag = req.FormValue("ITEM")
+		shopID = req.FormValue("ShopID")
+		itemID = req.FormValue("ItemID")
+		itemName = req.FormValue("ItemName")
+		itemDescription = req.FormValue("ItemDesc")
+		itemPrice = req.FormValue("ItemPrice")
+		itemCategory = req.FormValue("ItemCategory")
+		itemTiming = req.FormValue("ItemTiming")
+		deleteFlag = req.FormValue("deleteFlag")
+
+		fmt.Println("VAL ", flag, itemID, itemName, itemDescription, itemPrice, itemImage, shopID, itemCategory, itemTiming, deleteFlag)
+	}
+
+	if deleteFlag == "DELETE"{
+		fmt.Println("DELETING ITEM")
+		fetcher.DeleteItem("KEYVALUE", itemID)
+	} else if flag == "ITEMEDIT"{
+		fmt.Println("EDITING ITEM ", itemID)
+		//(key string, flag string, itemID string, itemName string, itemPrice string, itemTiming string, itemDesc string, itemImg string, itemCategory string, shopID string)
+		fetcher.EditItem("KEYVALUE", flag, itemID, itemName, itemPrice, itemTiming, itemDescription, itemImage, itemCategory, shopID)
+	}
+
+	req.ParseForm()
+
 	var mutex = &sync.Mutex{}
 
 	mutex.Lock()
@@ -73,17 +253,50 @@ func ServeItems(res http.ResponseWriter, req *http.Request){
 	}
 	mutex.Unlock()
 
-	var p *Page
-
-	p, _ = loadPage("adminitems.gohtml")
-
 	RenderHeader(res,req)
 
 	items := fetcher.GetAllCombinedItem("KEYVALUE")
-	p.Body.Execute(res, items)
+	var funcMap = template.FuncMap{
+		"mod": mod,
+		"equal": equal,
+		"equalstring": equalstring,
+	}
+
+	var tmp = template.Must(template.New("adminitems.gohtml").Funcs(funcMap).ParseFiles("htdocs/adminitems.gohtml"))
+	tmp.Execute(res, &items)
 }
 
 func ServeShops(res http.ResponseWriter, req *http.Request){
+	var flag string
+	var shopID string
+	var shopName string
+	var shopAddress string
+	var shopRating string
+	var shopPostCode string
+	var deleteFlag string
+
+	//req.ParseForm()
+	switch req.Method {
+	case "POST":
+		flag = req.FormValue("SHOP")
+		shopID = req.FormValue("ShopID")
+		shopName = req.FormValue("ShopName")
+		shopAddress = req.FormValue("ShopAddress")
+		shopRating = req.FormValue("ShopRating")
+		shopPostCode = req.FormValue("ShopPostCode")
+		deleteFlag = req.FormValue("deleteFlag")
+
+		fmt.Println("deleteFlag", deleteFlag)
+	}
+
+	if deleteFlag == "DELETE"{
+		fmt.Println("DELETING SHOP")
+		fetcher.DeleteShop("KEYVALUE", shopID)
+	} else if flag == "SHOPEDIT"{
+		fmt.Println("EDITING SHOP ", shopID)
+		fetcher.EditShop("KEYVALUE", flag, shopID, shopName, shopAddress, shopRating, shopPostCode)
+	}
+
 	var mutex = &sync.Mutex{}
 
 	mutex.Lock()
@@ -98,7 +311,8 @@ func ServeShops(res http.ResponseWriter, req *http.Request){
 
 	RenderHeader(res,req)
 
-	shops := fetcher.GetShops("KEYVALUE")
+	var shops []models.ShopsEdit
+	shops = fetcher.GetEditShops("KEYVALUE")
 	p.Body.Execute(res, shops)
 }
 
@@ -154,6 +368,11 @@ func mod(i, j int) bool {
 
 func equal(i, j int) bool {
 	return i == j
+}
+
+func equalstring(i int, j string) bool {
+	value, _ := strconv.Atoi(j)
+	return i == value
 }
 
 func loginHandler(res http.ResponseWriter, req *http.Request){
