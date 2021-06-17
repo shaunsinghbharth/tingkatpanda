@@ -13,13 +13,17 @@ func GetFullItemRecords(db *sql.DB, itemID string) []map[string]interface{} {
 		panic(err.Error())
 	}
 
-	/*
-		for results.Next() {
-			var item CombinedItem
-			results.Scan(&item.Item.ItemId, &item.Item.ItemName, &item.Item.ItemDesc, &item.Item.ItemPrice, &item.Item.ItemImg, &item.Item.ShopId,
-				&item.Shop.ShopId, &item.Shop.ShopName, &item.Shop.ShopAddress, &item.Shop.ShopStart, &item.Shop.ShopEnd, &item.Shop.ShopRating)
-			returnVal = append(returnVal, item)
-		}*/
+	returnMaps := goutils.SQLtoMap(results)
+
+	return returnMaps
+}
+
+func GetFullItemRecordsAll(db *sql.DB) []map[string]interface{} {
+	results, err := db.Query("Select * FROM GOLIVEDB.Items LEFT JOIN GOLIVEDB.Shops ON Items.ShopID = Shops.ShopID")
+
+	if err != nil {
+		panic(err.Error())
+	}
 
 	returnMaps := goutils.SQLtoMap(results)
 

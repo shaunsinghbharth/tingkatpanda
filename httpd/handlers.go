@@ -12,6 +12,7 @@ import (
 	"sync"
 	"tingkatpanda/cachinator"
 	"tingkatpanda/enginator"
+	"tingkatpanda/fetcher"
 	"tingkatpanda/models"
 )
 
@@ -79,11 +80,11 @@ func ShowSelect(res http.ResponseWriter, req *http.Request){
 func Populate(key string) *enginator.EnginatorTable{
 	table := enginator.Table("recommendations")
 
-	users := enginator.GetUsers(key)
+	users := fetcher.GetUsers(key)
 
 	for _,v := range users{
 		temp := make(map[interface{}]float64)
-		items := enginator.GetUserItems(key,v.UserName)
+		items := fetcher.GetUserItems(key,v.UserName)
 
 		for _,val := range items{
 			fmt.Println(v.UserName)
@@ -289,20 +290,21 @@ func ShowRecommendation(res http.ResponseWriter, req *http.Request){
 		if found {
 			tempItem = cacheOutput.([]models.CombinedItem)
 		} else {
-			tempItem = enginator.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
+			tempItem = fetcher.GetCombinedItem("KEYVALUE", strconv.Itoa(rec.Key.(int)))
 			mutex.Lock()
 			c.Set(strconv.Itoa(rec.Key.(int)), output, cachinator.DefaultExpiration)
 			mutex.Unlock()
 		}
 
 		shoplat, shoplong := GetCoordinates(tempItem[0].ShopPostCode)
-		itemPrice := tempItem[0].ItemPrice
+		itemPrice, _ := strconv.ParseFloat(tempItem[0].ItemPrice, 64)
 		itemCategory := tempItem[0].ItemCategory
 		dist := distance(lat,long,shoplat,shoplong, "K")
 		if dist < 5 && price == itemPrice && category == itemCategory{
 			for i,v := range timings {
 				v_int, _ := strconv.Atoi(v)
-				if v_int == tempItem[0].ItemTiming {
+				itemTiming, _ := strconv.Atoi(tempItem[0].ItemTiming)
+				if v_int ==  itemTiming{
 					output[i] = append(output[i], tempItem[0])
 				}
 			}

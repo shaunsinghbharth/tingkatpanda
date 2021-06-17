@@ -1,0 +1,49 @@
+<section class="container" style="margin: auto; margin-top: 300px;">
+  <div style="width: 1600px; margin: auto; padding: 30px; box-shadow: 0 2px 28px 0 rgba(0,0,0,0.12);;">
+    <h3 style="margin-bottom: 30px;">Add/Edit/Delete Items</h3>
+    <div>
+      <table class="admintable">
+        <tr>
+          <th>Item Name</th>
+          <th>Item Price</th>
+          <th>Item Description</th>
+          <th>Item Image</th>
+          <th>Which shop this item is from</th>
+          <th>Item Category</th>
+          <th>Item Timing (Breakfast/Lunch/Dinner)</th>
+          <th>Actions</th>
+        </tr>
+        {{range .}}
+        <form method="post">
+          <tr>
+            <input hidden type="text" name="ITEM" value="ITEM">
+            <input hidden type="number" name="ItemID" value="{{ .ItemId}}">
+            <th><input type="text" name="ShopName" value="{{ .ItemName}}"></th>
+            <th><input type="number" name="ShopName" value="{{ .ItemPrice}}"></th>
+            <th><input type="text" name="ShopName" value="{{ .ItemDesc}}"></th>
+            <th><input type="text" name="ShopName" value="{{ .ItemImg}}"></th>
+            <th><input type="text" name="ShopName" value="{{ .ShopName}}"></th>
+            <th><input type="text" name="ShopName" value="{{ .ItemCategory}}"></th>
+            <th><input type="number" name="ShopName" value="{{ .ItemTiming}}"></th>
+            <th><button type="submit">Edit</button> | <a href="/admin/delete/"><button>Delete</button></a> </th>
+          </tr>
+          {{end}}
+          <form method="post">
+            <tr>
+              <input hidden type="text" name="SHOP" value="SHOPADD">
+              <input hidden type="number" name="ShopID" value="">
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><input type="text" name="ShopName" value=""></th>
+              <th><button type="submit">Add</button></th>
+            </tr>
+      </table>
+    </div>
+  </div>
+</section>
+</body>
+
+</html>

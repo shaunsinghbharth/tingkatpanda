@@ -1,6 +1,7 @@
 package loadbalancer
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -61,6 +62,7 @@ func handleRequestAndRedirect(res http.ResponseWriter, req *http.Request) {
 // Given a request send it to the appropriate url
 func handleAdminRequestAndRedirect(res http.ResponseWriter, req *http.Request) {
 	url := "http://localhost:8085"
+	fmt.Println("ADMIN PROXY")
 
 	logRequestPayload(url)
 

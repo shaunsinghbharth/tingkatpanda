@@ -27,6 +27,7 @@ func initaliseHandlers(router *mux.Router) {
 	router.Use(Authenticator)
 
 	router.HandleFunc("/getfullitem", GetFullItem).Methods("GET")
+	router.HandleFunc("/getfullitems", GetFullItems).Methods("GET")
 
 	router.HandleFunc("/getuseritems", GetUserItems).Methods("GET")
 

@@ -33,8 +33,6 @@ func Start(wg sync.WaitGroup, port string){
 	srv = &http.Server{Addr: ":" + port,
 	Handler: mux}
 
-
-
 	fmt.Println("Initialising Session Manager")
 	manager = &sessionManager.SessionManager{}
 	manager.Init("tingkatpanda")
@@ -48,6 +46,11 @@ func Start(wg sync.WaitGroup, port string){
 
 
 	mux.HandleFunc("/", ServeHTTP)
+	mux.HandleFunc("/admin/functions/", ServeFunctions)
+	mux.HandleFunc("/admin/functions/shops/", ServeShops)
+	mux.HandleFunc("/admin/functions/items/", ServeItems)
+	mux.HandleFunc("/admin/functions/users/", ServeUsers)
+
 
 	mux.HandleFunc("/destroy/", Destroy)
 	err := srv.ListenAndServe()

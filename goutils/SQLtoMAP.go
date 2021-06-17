@@ -37,6 +37,6 @@ func SQLtoMap(results *sql.Rows) []map[string]interface{} {
 		resultArray = append(resultArray, resultMap)
 	}
 
-	fmt.Println("SQLtoMAP ", resultArray)
+	//fmt.Println("SQLtoMAP ", resultArray)
 	return resultArray
 }

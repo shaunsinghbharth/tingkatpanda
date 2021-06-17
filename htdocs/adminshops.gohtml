@@ -1,0 +1,47 @@
+<section class="container" style="margin: auto; margin-top: 300px;">
+  <div style="width: 1400px; margin: auto; padding: 30px; box-shadow: 0 2px 28px 0 rgba(0,0,0,0.12);;">
+    <h3 style="margin-bottom: 30px;">Add/Edit/Delete Shops</h3>
+    <div>
+      <table class="admintable">
+        <tr>
+          <th>Shop Name</th>
+          <th>Shop Address</th>
+          <th>Shop Rating</th>
+          <th>Shop Postal Code</th>
+          <th>Shop Start Time</th>
+          <th>Shop End Time</th>
+          <th>Actions</th>
+        </tr>
+        {{range .}}
+          <form method="post">
+        <tr>
+          <input hidden type="text" name="SHOP" value="SHOP">
+          <input hidden type="number" name="ShopID" value="{{ .ShopId}}">
+          <th><input type="text" name="ShopName" value="{{ .ShopName}}"></th>
+          <th><input type="text" name="ShopName" value="{{ .ShopAddress}}"></th>
+          <th><input type="text" name="ShopName" value="{{ .ShopRating}}"></th>
+          <th><input type="text" name="ShopName" value="{{ .ShopPostCode}}"></th>
+          <th><input type="text" name="ShopName" value="{{ .ShopStart}}"></th>
+          <th><input type="text" name="ShopName" value="{{ .ShopEnd}}"></th>
+          <th><button type="submit">Edit</button> | <a href="/admin/delete/"><button>Delete</button></a> </th>
+        </tr>
+        {{end}}
+            <form method="post">
+              <tr>
+                <input hidden type="text" name="SHOP" value="SHOPADD">
+                <input hidden type="number" name="ShopID" value="">
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><input type="text" name="ShopName" value=""></th>
+                <th><button type="submit">Add</button></th>
+              </tr>
+      </table>
+    </div>
+  </div>
+</section>
+</body>
+
+</html>

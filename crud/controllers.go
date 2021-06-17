@@ -20,6 +20,18 @@ func GetFullItem(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("SUCCESS")
 }
 
+func GetFullItems(w http.ResponseWriter, r *http.Request) {
+
+	var item []map[string]interface{}
+	item = GetFullItemRecordsAll(&db)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(item)
+
+	fmt.Println("SUCCESS")
+}
+
 //GetAllUser get all user data
 func GetAllUser(w http.ResponseWriter, r *http.Request) {
 
