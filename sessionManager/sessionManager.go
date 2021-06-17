@@ -142,9 +142,9 @@ func (session *SessionManager)ValidSession(req *http.Request) bool{
 }
 
 func (session *SessionManager)GetCurrentUser(req *http.Request) string{
-	cookie , err := req.Cookie(session.SessionName)
+	cookie , _ := req.Cookie(session.SessionName)
 
-	if err == nil{
+	if cookie == nil{
 		for _,v := range session.Users{
 			if v.UUID == cookie.Value{
 				return v.Username
@@ -155,9 +155,9 @@ func (session *SessionManager)GetCurrentUser(req *http.Request) string{
 }
 
 func (session *SessionManager)GetCurrentUserObject(req *http.Request) Users {
-	cookie , err := req.Cookie(session.SessionName)
+	cookie , _ := req.Cookie(session.SessionName)
 
-	if err == nil{
+	if cookie != nil{
 		for _,v := range session.Users{
 			if v.UUID == cookie.Value{
 				return v

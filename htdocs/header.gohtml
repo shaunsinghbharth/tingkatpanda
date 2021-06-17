@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--[if lt IE 10]> <html class="ie9"> <![endif]-->
+<!--[if !(IE)]><!--> <html class="" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>Great Food. Now Made Easy | tingkatpanda</title>
+
+
+    <meta name="robots" content="index, follow" />
+
+    <meta name="description" content="Order food from restaurants or groceries from top shops across Singapore ✔ Curated selection of dishes and household needs ✔ Safe & easy payment options">
+    <link rel="canonical" href="https://www.foodpanda.sg/" />
+
+
+    <link rel="stylesheet" href="https://assets.foodora.com/15f52b8/css/dist/sg-default.css?15f52b8" />
+    <link rel="stylesheet" href="/css/vendor.css" />
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="https://assets.foodora.com/15f52b8/js/lib/load-fid-polyfill.js?15f52b8"></script>
+    <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <script type="application/javascript">
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+    </script>
+
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+
+    <script type="application/javascript">
+        $( document ).ready(function() {
+            console.log( "ready!" );
+            let searchParams = new URLSearchParams(window.location.search)
+            let param = searchParams.get('postcode')
+            $("#postcode").val(param)
+
+
+            $("#selector li").click(function(){
+                alert("CLICK")
+                $("#cuisine-type").val($(this).attr("value"));
+            });
+        });
+    </script>
+</head>
+<body class="country-sg home">
+
+<div class="top-section">
+
+
+    <header class="header header-no-bg" style="background: #FFFFFF">
+
+
+        <div class="logo-wrapper">
+            <div class="logo logo-foodpanda">
+                <a href="/"> <img src="/images/logo.png" style="width: 300px;"> </a>
+            </div>
+        </div>
+
+
+        <div class="user-wrapper">
+            <div class="account header__account" data-testid="header-account">
+
+                <div class="header__account__logged">
+                    {{if .Username}}
+                    <p>Welcome Back! {{.Username}}</p>
+                    {{end}}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="order-components">
+
+
+
+        </div>
+
+        <div class="cart-icon-wrapper">
+        </div>
+    </header>
+
+    <script>
+
+        function getAppTypeCookie(){
+            var cookies = document.cookie.split(';').reduce((acc, string) => {
+                const [key, value] = string.split('=');
+                return {...acc, [key.trim()]: value}
+            }, {})
+
+            var appTypeCookie = cookies['app-type']
+
+            if(appTypeCookie){
+                return appTypeCookie
+            }
+
+            return '';
+        }
+
+        function repositionComponents(){
+            var logoWrapper = document.querySelector('.logo-wrapper');
+            var backIconWrapper = document.querySelector('.back-icon-wrapper');
+            var logo = document.querySelector('.logo');
+            var svgLogoWrapper = document.querySelector('.logo-wrapper .svg-logo-wrapper')
+            var userWrapper = document.querySelector('.user-wrapper');
+            var userDropdownMenu = document.querySelector('.user-wrapper .dropdown-menu')
+            var isCheckout = document.location.pathname.includes('checkout');
+            var isBackVisible = backIconWrapper && backIconWrapper.style.display !== 'none';
+
+            logoWrapper.style.order = -1;
+            logo.style.width = 'fit-content';
+            if(!isCheckout){
+                logo.style.padding = '0px';
+            }
+            if(isCheckout && !isBackVisible){
+                logo.style.transform = 'none';
+            }
+            logo.style.alignItems = 'center';
+            svgLogoWrapper.style.transform = "scale(0.8) translateX(-15%)";
+            userWrapper.style.order = 5;
+
+            if(userDropdownMenu){
+                userDropdownMenu.style.left = '-140px';
+            }
+
+            if(!document.referrer.includes('foodpanda')){
+                logo.style.paddingLeft = '24px';
+            }
+        }
+
+        var appTypeCookie = getAppTypeCookie();
+        if(appTypeCookie === 'gcashmweb' && window.innerWidth < 960){
+            repositionComponents()
+        }
+
+    </script>
+
+    <aside class="top-flood-banner-container">
+        <div id="flood-banner-react-root"></div>
+    </aside>
+
+    <aside class="top-skinny-banner-container">
+        <div id="skinny-banner-react-root"></div>
+    </aside>
+    <div class="order-wrapper-overlay"></div>
+</div>

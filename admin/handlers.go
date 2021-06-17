@@ -1,4 +1,4 @@
-package httpd
+package admin
 
 import (
 	"encoding/json"
@@ -20,7 +20,7 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 
 	mutex.Lock()
 	if manager.ValidSession(req) == false{
-		http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
+		//http.Redirect(res,req,"/login/",http.StatusTemporaryRedirect)
 	}
 	mutex.Unlock()
 
@@ -36,7 +36,7 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request){
 
 	if err != nil{
 		//res.Header().Set("Content-Type", "text/html")
-		p, _ = loadPage("index.html")
+		p, _ = loadPage("admin.html")
 	}
 
 	RenderHeader(res,req)

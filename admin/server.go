@@ -1,4 +1,4 @@
-package httpd
+package admin
 
 import (
 	"fmt"
@@ -48,10 +48,6 @@ func Start(wg sync.WaitGroup, port string){
 
 
 	mux.HandleFunc("/", ServeHTTP)
-	mux.HandleFunc("/recommend/", ShowRecommendation)
-	mux.HandleFunc("/select/", ShowSelect)
-	mux.HandleFunc("/login/", Login)
-	mux.HandleFunc("/authenticate/", Authenticate)
 
 	mux.HandleFunc("/destroy/", Destroy)
 	err := srv.ListenAndServe()
