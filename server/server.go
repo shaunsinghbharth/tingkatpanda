@@ -311,7 +311,9 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 	param2 := r.URL.Query().Get("password")
 
 	var user []Users
-	user = EditUserRecords(&db, param1, param2)
+
+	//edit the (trim) username and (hash) password into the DB
+	user = EditUserRecords(&db, param1, string(HashPassword(param2)))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -376,7 +378,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 //Delete Shop
 func DeleteShop(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("shop")
+	param1 := r.URL.Query().Get("shopid")
 
 	successMessage := DeleteShopRecords(&db, param1)
 	returnVal := struct {
@@ -393,7 +395,7 @@ func DeleteShop(w http.ResponseWriter, r *http.Request) {
 
 //Delete Item
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
-	param1 := r.URL.Query().Get("item")
+	param1 := r.URL.Query().Get("itemid")
 
 	successMessage, err := DeleteItemRecords(&db, param1)
 
@@ -418,8 +420,8 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func Connect() sql.DB {
-	//db, err := sql.Open("mysql", "tuckmeng:G0L1V3@tcp(128.199.125.231:3306)/GOLIVEDB")
-	db, err := sql.Open("mysql", "tuckmeng:G0L1V3@tcp(127.0.0.1:12358)/GOLIVEDB")
+	db, err := sql.Open("mysql", "tuckmeng:G0L1V3@tcp(128.199.125.231:3306)/GOLIVEDB")
+	//db, err := sql.Open("mysql", "user1:password@tcp(127.0.0.1:3306)/GOLIVEDB")
 
 	if err != nil {
 		panic(err.Error())
@@ -451,7 +453,7 @@ func InsertUserRecords(db *sql.DB, username, password string) []Users {
 }
 
 func InsertShopRecords(db *sql.DB, shopid, shopname, shopaddress, shoprating, shopperiod string) []Shops {
-	results, err := db.Query("INSERT INTO GOLIVEDB.Shops VALUES (?,?,?,?,?)", shopid, shopname, shopaddress, shoprating, shopperiod)
+	results, err := db.Query("INSERT INTO GOLIVEDB.Shop VALUES (?,?,?,?,?)", shopid, shopname, shopaddress, shoprating, shopperiod)
 
 	if err != nil {
 		panic(err.Error())
@@ -469,7 +471,7 @@ func InsertShopRecords(db *sql.DB, shopid, shopname, shopaddress, shoprating, sh
 }
 
 func InsertItemRecords(db *sql.DB, itemid, itemname, itemprice, itemdesc, itemimg, shopid string) []Items {
-	results, err := db.Query("INSERT INTO GOLIVEDB.Items VALUES (?,?,?,?,?,?)", itemid, itemname, itemprice, itemdesc, itemimg, shopid)
+	results, err := db.Query("INSERT INTO GOLIVEDB.Item VALUES (?,?,?,?,?,?)", itemid, itemname, itemprice, itemdesc, itemimg, shopid)
 
 	if err != nil {
 		panic(err.Error())
@@ -505,7 +507,7 @@ func GetUserRecords(db *sql.DB) []Users {
 }
 
 func GetShopRecords(db *sql.DB) []Shops {
-	results, err := db.Query("Select * FROM GOLIVEDB.Shops")
+	results, err := db.Query("Select * FROM GOLIVEDB.Shop")
 
 	if err != nil {
 		panic(err.Error())
@@ -523,7 +525,7 @@ func GetShopRecords(db *sql.DB) []Shops {
 }
 
 func GetItemRecords(db *sql.DB) []Items {
-	results, err := db.Query("Select * FROM GOLIVEDB.Items")
+	results, err := db.Query("Select * FROM GOLIVEDB.Item")
 
 	if err != nil {
 		panic(err.Error())
@@ -578,7 +580,7 @@ func GetSpecificUserRecords(db *sql.DB, UN string) []Users {
 }
 
 func GetSpecificShopRecords(db *sql.DB, SI string) []Shops {
-	results, err := db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", SI)
+	results, err := db.Query("Select * FROM GOLIVEDB.Shop WHERE ShopID=?", SI)
 
 	if err != nil {
 		panic(err.Error())
@@ -596,7 +598,7 @@ func GetSpecificShopRecords(db *sql.DB, SI string) []Shops {
 }
 
 func GetSpecificItemRecords(db *sql.DB, II string) []Items {
-	results, err := db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", II)
+	results, err := db.Query("Select * FROM GOLIVEDB.Item WHERE ItemID=?", II)
 
 	if err != nil {
 		panic(err.Error())
@@ -635,12 +637,12 @@ func EditUserRecords(db *sql.DB, UN string, PW string) []Users {
 
 func EditShopRecords(db *sql.DB, ID string, SN string, SA string, SR string, SP string) []Shops {
 	//func EditShopRecords(db *sql.DB, ID int, SN string, SA string, SR string, SP string) []Shops {
-	results, err := db.Query("UPDATE Shops SET ShopName=?, ShopAddress=?, ShopRating=?, ShopPeriod=? WHERE ShopId=?", SN, SA, SR, SP, ID)
+	results, err := db.Query("UPDATE Shop SET ShopName=?, ShopAddress=?, ShopRating=?, ShopPeriod=? WHERE ShopId=?", SN, SA, SR, SP, ID)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Shops WHERE ShopID=?", ID)
+		results, err = db.Query("Select * FROM GOLIVEDB.Shop WHERE ShopID=?", ID)
 	}
 
 	var returnVal []Shops
@@ -656,12 +658,12 @@ func EditShopRecords(db *sql.DB, ID string, SN string, SA string, SR string, SP 
 
 func EditItemRecords(db *sql.DB, ID string, IN string, IP string, DE string, IG string, SI string) []Items {
 	//func EditItemRecords(db *sql.DB, ID int, IN string, IP float64, DE string, IG string, SI int) []Items {
-	results, err := db.Query("UPDATE Items SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", IN, IP, DE, IG, SI, ID)
+	results, err := db.Query("UPDATE Item SET ItemName=?, ItemPrice=?, ItemDesc=?, ItemImg=?, ShopID=? WHERE ItemId=?", IN, IP, DE, IG, SI, ID)
 
 	if err != nil {
 		panic(err.Error())
 	} else {
-		results, err = db.Query("Select * FROM GOLIVEDB.Items WHERE ItemID=?", ID)
+		results, err = db.Query("Select * FROM GOLIVEDB.Item WHERE ItemID=?", ID)
 	}
 
 	var returnVal []Items
@@ -691,7 +693,7 @@ func DeleteUserRecords(db *sql.DB, UN string) string {
 }
 
 func DeleteShopRecords(db *sql.DB, ID string) string {
-	results, err := db.Query("DELETE FROM Shops WHERE ShopID=?", ID)
+	results, err := db.Query("DELETE FROM Shop WHERE ShopID=?", ID)
 
 	if err != nil {
 		return "404 - Shop Does Not Exist"
@@ -706,7 +708,7 @@ func DeleteShopRecords(db *sql.DB, ID string) string {
 }
 
 func DeleteItemRecords(db *sql.DB, ID string) (string, error) {
-	_, err := db.Query("DELETE FROM Items WHERE ItemID=?", ID)
+	_, err := db.Query("DELETE FROM Item WHERE ItemID=?", ID)
 
 	if err != nil {
 		return "", errors.New("does not exist")

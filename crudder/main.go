@@ -1,6 +1,6 @@
 // Name : Siew Tuck Meng
 // Email :tuckmengsiew@gmail.com
-package crudder
+package main
 
 import (
 	"database/sql"
@@ -358,7 +358,7 @@ func GetSpecificUserRecord(db *sql.DB, UN string) {
 	}
 }
 
-func Start() {
+func main() {
 	db, err := sql.Open("mysql", "tuckmeng:G0L1V3@tcp(128.199.125.231:3306)/GOLIVEDB")
 
 	if err != nil {
@@ -692,5 +692,4 @@ func Start() {
 			break
 		}
 	}
-
 }
