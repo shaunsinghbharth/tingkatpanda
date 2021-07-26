@@ -1,9 +1,5 @@
 # tingkatpanda
 
-<h1>Tingkat Panda is a project of "Project GoLive", a module in goSchool that is jointly conducted by the CET Academy at Ngee Ann Polytechnic and Tribe Academy</h1>
-<h3>Team Members: Shaun Bharth and Siew Tuck Meng</h3>
-<h3>Supervisor: Ben Low</h3>
-
 ![Tingkat Panda Logo](https://github.com/shaunpaulsingh/tingkatpanda/raw/master/htdocs/images/logo.png)
 
 <h4>Project Synopsis</h4>
@@ -26,5 +22,3 @@ This project will run through the following phases:
   <li>Testing</li>
   <li>Integration</li>
 </ul>
-
-Due to the short nature of this project and the fact that we only have 2 team members sans our advisor, we have decided to work based on an iterative model. We will go through iteration #1 where our chief aim is to complete our skeletal application and then iteration #2 where we will aim to complete a bare bones working prototype.</p>
